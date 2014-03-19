@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Barista</title>
+        <link href="css/barista.css" rel="stylesheet" type="text/css">
+
+        <script src="jquery.js"></script>
+
+        <script type="text/javascript">
+            // AJUDA
+
+            $("document").ready(function() {
+                $(".help").hide();  
+            });
+             
+            function toggleHelp() {        
+                $(".help").toggle();
+
+            }
+        </script>
+
+        <script type="text/javascript">
+            // BLOQUEIO
+
+            function toggleBloqueio(){
+                $("#bloqueado").toggle();
+                var img =document.getElementById("cadeadoImg").getAttributeNode("src").value;
+                if(img == "imagens/cadeadoaberto.png"){
+                    document.getElementById("cadeadoImg").getAttributeNode("src").value = "imagens/cadeadofechado.png";
+                } else {
+                    document.getElementById("cadeadoImg").getAttributeNode("src").value = "imagens/cadeadoaberto.png";
+                }
+            }
+        </script>
+
+        <script type="text/javascript">
+            // HORA
+
+            function generateTimeString(hours, minutes) {
+                var time = "";
+                if(hours < 10)
+                    time += "0";
+                time += hours + ":";
+                if(minutes < 10)
+                    time += "0";
+                time += minutes;
+
+                return time;        
+            }
+
+            $("document").ready(function() {
+                var currentDate = new Date();
+                $("#title").text(generateTimeString(currentDate.getHours(), currentDate.getMinutes()));  
+            });
+
+            $("document").ready(function(){
+                var item = sessionStorage.getItem('mensagensnaolidas');
+                if(!item) {
+                    var newsrc = $(".msg").attr("src").replace("imagens/mensagens.png", "imagens/mensagensnaolidas.png");
+                    $(".msg").attr("src", newsrc);
+                }
+            });
+        </script>
+
+        <script src="total_icone.js"></script>
+    </head>
+
+    <body>
+        <div id="header">
+            <div id="logoContainer">
+                <a href="barista.html">
+                    <img id="logo" src="imagens/logosimple.png" />
+                </a>
+            </div>
+            <div id="titleContainer">
+                <span id="title"></span>
+            </div>
+            <div id="navigation">
+                <div class="navImgContainer">
+                    <a href="conversas.html">
+                        <img class="msg navImg" src="imagens/mensagens.png" />
+                    </a>
+                </div>
+                <div class="navImgContainer">
+                    <a href="pagamentos.html">
+                        <img class="navImg" src="imagens/pagamentos.png" />
+                    </a>
+                    <div id="total_pagamento"></div>
+                </div> 
+                <div class="navImgContainer">
+                    <a onclick="toggleHelp()">
+                        <img class="navImg" src="imagens/ajuda.png" />
+                    </a>
+                </div>  
+            </div>
+        </div>
+        <div id="content">
+            <div class="largeNavContainer">
+                <a href="bebidas.html">
+                    <img class="largeNavImg" src="imagens/bebidas.png" />
+                </a>
+            </div>
+
+            <div class="largeNavContainer">
+                <a href="comidas.html">
+                    <img class="largeNavImg" src="imagens/comida.png" />
+                </a>
+            </div>
+
+            <div class="largeNavContainer">
+                <a href="conversas.html">
+                    <img class="largeNavImg" src="imagens/conversas.png" />
+                </a>
+            </div>
+
+            <div class="largeNavContainer">
+                <a href="pagamentos.html">
+                    <img class="largeNavImg" src="imagens/pagamento.png" />
+                </a>
+            </div>
+        </div>
+        <div id="flutuantes">
+            <div id="ajudas">
+                <div class="help" id="ajuda1">&darr; Toque aqui para pedir bebidas</div>
+                <div class="help" id="ajuda2">Toque aqui para pedir comidas &darr;</div>
+                <div class="help" id="ajuda3">&darr; Toque aqui para conversar</div>
+                <div class="help" id="ajuda4">Toque aqui para pagar &darr;</div>
+                <div class="help" id="ajuda5">&larr; Toque aqui para bloquear o ecrã</div>
+            </div>
+
+            <div id="bloqueado"> 
+                <span id="mensagemBloqueado">Ecrã Bloqueado</span>
+            </div> 
+            <div id="cadeado">
+                <a onclick="toggleBloqueio()">
+                    <img id ="cadeadoImg" src="imagens/cadeadoaberto.png">
+                </a>
+            </div>
+        </div>
+    <body>
+</html>

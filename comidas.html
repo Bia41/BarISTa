@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Barista</title>
+
+        <link rel="stylesheet" type="text/css" href="css/barista.css">
+        <link rel="stylesheet" type="text/css" href="css/comidas.css">
+
+        <script src="jquery.js"></script>
+        <script type="text/javascript" src="ink-2.2.1/js/ink.min.js"></script>
+        <script type="text/javascript" src="ink-2.2.1/js/ink-ui.min.js"></script>
+        <script type="text/javascript" src="ink-2.2.1/js/ink.modal.js"></script>
+        <script type="text/javascript" src="ink-2.2.1/js/autoload.js"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+
+        <script type="text/javascript">
+            // AJUDA
+
+            $("document").ready(function() {
+                $(".help").hide();
+            });
+             
+            function toggleHelp() {        
+                $(".help").toggle();
+            }
+
+            function toggleHelpPers() {
+                $("#ajudaPop1").toggle();  
+                $("#ajudaPop2").toggle();  
+                $("#ajudaPop3").toggle();
+            }
+
+            function cancelaToggleHelp(){
+              $("#ajudaPop1").hide();  
+              $("#ajudaPop2").hide();  
+              $("#ajudaPop3").hide();
+            }
+
+            function activaPopupIngr(){
+              $("#tabela_pedido tbody tr td").click(function(){
+                setUpPopIngr(this);
+                $("#dummy_ingr").click();
+              });
+            }
+
+            function setUpPopIngr(elem){
+              $("#titulo_ingr").html($(elem).children(".nome_no_pedido").html());
+
+              $("#ingr_list_container").html("");
+              $("#ingr_list_container").html($(elem).children(".componentes").html());
+
+              var quantidade = Number($(elem).children(".qtd_no_pedido").text());
+              var preco = parseFloat($(elem).children(".preco_no_pedido").text().slice(0,-1)) / quantidade; //Removes € from string
+
+              $("#preco_unitario").text(preco.toFixed(2) + '€/un');
+              $("#ingr_qtd").text(quantidade);
+              if(quantidade == 1)
+                $("#ingr_menos_qtd").children().css("opacity", "0.3");
+              else $("#ingr_menos_qtd").children().css("opacity", "1.0");
+
+              $("#confirmar_ingr").unbind('click');
+              $("#confirmar_ingr").click(function(){
+                confirmarIngr(elem);
+              });
+            }
+
+            function reduzirQuantidadeIngr(){
+              var quantidade = Number($("#ingr_qtd").text());
+
+              if(quantidade > 1) {
+                quantidade--;
+                $("#ingr_qtd").text(quantidade);
+                if(quantidade == 1)
+                $('#ingr_menos_qtd').children().css("opacity", "0.3");
+              }
+            }
+
+            function aumentarQuantidadeIngr(){
+              var quantidade = Number($("#ingr_qtd").text());
+
+              quantidade++;
+              $("#ingr_qtd").text(quantidade);
+              $('#ingr_menos_qtd').children().css("opacity", "1.0");
+            }
+
+            function confirmarIngr(elem){
+              var quantidade = Number($(elem).children(".qtd_no_pedido").text());
+              var novaQuantidade = Number($("#ingr_qtd").text());
+
+              if(quantidade == novaQuantidade) return;
+
+              var preco = parseFloat($(elem).children(".preco_no_pedido").text().slice(0,-1)) / quantidade; //Removes € from string
+              $(elem).children(".qtd_no_pedido").text(novaQuantidade);
+              $(elem).children(".preco_no_pedido").text((novaQuantidade * preco).toFixed(2) + '€');
+            }
+
+            $("document").ready(function(){
+                var item = sessionStorage.getItem('mensagensnaolidas');
+                if(!item) {
+                    var newsrc = $(".msg").attr("src").replace("imagens/mensagens.png", "imagens/mensagensnaolidas.png");
+                    $(".msg").attr("src", newsrc);
+                }
+            });
+        </script>
+
+        <script type="text/javascript">
+
+        var precos = {
+          "Queijo": 0.55,
+          "Fiambre": 0.55,
+          "Hamburguer": 2.50,
+          "Alface": 0.20,
+          "Tomate": 0.20,
+          "Bacon": 0.60,
+          "Cebola": 0.20,
+          "Pickles": 0.30,
+          "Ketchup": 0.10,
+          "Maionese": 0.10
+        };
+
+        var comidas = {
+          "Hamburguer Simples": {
+            "Hamburguer": 1,
+            "Ketchup": 1,
+            "Pickles": 1
+          },
+          "Cheeseburguer": {
+            "Hamburguer": 1,
+            "Queijo": 1,
+            "Ketchup": 1
+          },
+          "Hamburguer Barista": {
+            "Hamburguer": 1,
+            "Cebola": 1,
+            "Bacon": 1,
+            "Queijo": 1,
+            "Alface": 1
+          }
+        };
+
+        var coresComidas = {
+          "Fiambre": "pink",
+          "Queijo": "khaki",
+          "Hamburguer": "brown",
+          "Alface": "limegreen",
+          "Tomate": "tomato",
+          "Bacon": "palevioletred",
+          "Cebola": "tan",
+          "Pickles": "darkseagreen",
+          "Ketchup": "maroon",
+          "Maionese": "beige"
+        }
+
+        var comidaActual = null;
+
+        var doses = 0;
+
+        var quantidade = 1;
+
+        var canvas;
+
+        var canvasContext;
+
+        function clone(obj) {
+          if (null == obj || "object" != typeof obj) return obj;
+          var copy = obj.constructor();
+          for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+          }
+          return copy;
+        }
+
+        function adicionaComida(comida){
+          if(doses == 5)
+            return;
+          if(comidaActual[comida] == null){
+            comidaActual[comida] = 1;
+            adicionarComponente(comida, comidaActual[comida], precos[comida]);
+          }
+          else {
+            comidaActual[comida]++;
+            doses++;
+            $('.item_pers').each(function(){
+              if($(this).text() == comida){
+                $(this).siblings('.qtd_pers').text(comidaActual[comida]);
+              }
+            });
+          }
+          calculaTotalPers();
+          drawBurger();
+          podeConfirmar();
+          verificarDoses();
+        }
+        
+        function personalizar(nome) {
+          $('.help').hide();
+          clearTable();
+          $('#titulo_pers').text(nome);
+          $('#titulo_pers2').text(nome);
+          $('#pers_menos_qtd').children().css("opacity", "0.3");
+          $('#confirmar_pers').unbind("click");
+          $('#confirmar_pers').click(function() {
+            confirmar(nome);
+          });
+          canvas = $("#copoCanvas")[0];
+          canvasContext = canvas.getContext("2d");
+          comidaActual = clone(comidas[nome]);
+          drawTable();
+          drawBurger();
+          quantidade = 1;
+          $("#pers_qtd").text(quantidade);
+          calculaTotalPers();
+          podeConfirmar();
+          verificarDoses();
+        }
+
+        function drawTable(){
+          for(componente in comidaActual){
+            adicionarComponente(componente, comidaActual[componente], precos[componente]);
+          }
+        }
+
+        function clearTable(){
+          $("#tabela_pers tbody").empty();
+          doses = 0;
+          comidaActual = null;
+        }
+
+        function adicionarComponente(componente, quantidade, preco){
+            $("#tabela_pers tbody").append('<tr><td><section class="botao_apagar_pers" onclick="javascript:removeComponente(this)"> <img class="trash" src="imagens/trashblack.png"/> </section><section class="item_pers">' + componente + '</section><section class="menos_pers" onclick="javascript:reduzirQuantidade(this)"> <img src="imagens/menos.png"/> </section><section class="qtd_pers">' + quantidade + '</section><section class="mais_pers" onclick="javascript:aumentarQuantidade(this)"> <img src="imagens/mais.png" /> </section><section class="preco_pers">' + (preco*quantidade).toFixed(2) + '€ </section></td></tr>');
+            doses += quantidade;
+            verificarDoses();
+        }
+
+        function verificarDoses() {
+          if(doses == 5)
+            $(".mais_pers").children().css("opacity", "0.3");
+          else
+            $(".mais_pers").children().css("opacity", "1.0"); 
+        }
+
+        function aumentarQuantidade(elemento){
+          if(doses == 5)
+            return;
+          var quantidade = $(elemento).siblings('.qtd_pers');
+          quantidade.text(parseInt(quantidade.text()) + 1);
+          var componente = $(elemento).siblings('.item_pers').text();
+          comidaActual[componente]++;
+          doses++;
+          $(elemento).siblings('.preco_pers').text((comidaActual[componente] * precos[componente]).toFixed(2) + "€");
+          calculaTotalPers();
+          drawBurger();
+          podeConfirmar();
+          verificarDoses();
+        }
+
+        function reduzirQuantidade(elemento){
+          var quantidade = $(elemento).siblings('.qtd_pers');
+          quantidade.text(parseInt(quantidade.text()) - 1);
+          var componente = $(elemento).siblings('.item_pers').text();
+          comidaActual[componente]--;
+          doses--;
+          if(comidaActual[componente] == 0){
+            removeComponente(elemento);
+          }
+          else $(elemento).siblings('.preco_pers').text((comidaActual[componente] * precos[componente]).toFixed(2) + "€");
+          calculaTotalPers();
+          drawBurger();
+          podeConfirmar();
+          verificarDoses();
+        }
+
+        function aumentarQuantidadePedidoPersonalizado() {
+          quantidade++;
+          $("#pers_qtd").text(quantidade);
+          $('#pers_menos_qtd').children().css("opacity", "1.0");
+          calculaTotalPers();
+        }
+
+        function reduzirQuantidadePedidoPersonalizado() {
+          if(quantidade > 1) {
+            quantidade--;
+            $("#pers_qtd").text(quantidade);
+            calculaTotalPers();
+            if(quantidade == 1)
+              $('#pers_menos_qtd').children().css("opacity", "0.3");
+            
+          }
+        }
+
+        function removeComponente(elemento){
+          var componente = $(elemento).siblings('.item_pers').text();
+          doses -= comidaActual[componente];
+          delete comidaActual[componente];
+          $(elemento).parent().parent().remove();
+          calculaTotalPers();
+          drawBurger();
+          podeConfirmar();
+          verificarDoses();
+        }
+
+        function calculaTotalPers(){
+          var total = 0;
+          for(componente in comidaActual){
+            total += comidaActual[componente] * precos[componente];
+          }
+          total *= quantidade;
+          $('#total_pers').text(total.toFixed(2) + '€');
+        } 
+
+        var selected = null;
+
+        function confirmar(nome){
+            var total = 0;
+            var compString = "<ul>";
+            for(componente in comidaActual){
+              total += comidaActual[componente] * precos[componente];
+              compString += "<li>" + comidaActual[componente] + " x " + componente + "</li>";
+            }
+            total *= quantidade;
+            compString += "</ul>";
+            var html = "<tr><td><section class=\"botao_apagar_item\"> <img class='trash' src='imagens/trashblack.png'/></span> </section><section class=\"qtd_no_pedido\">" + quantidade + "</section><section class=\"nome_no_pedido\"><span class='personalizado'>* </span>" + nome + "</section><section class=\"preco_no_pedido\">" + total.toFixed(2) + "€</section> <section class='componentes'>" + compString + "</section></td></tr>";
+
+            $('#tabela_pedido tbody').append(html);
+
+            $(".botao_apagar_item").unbind("click");
+
+            $(".botao_apagar_item").on("click", function() {
+                  apagaItem(this);
+              });
+
+            calculaTotal();
+
+            $('.botao_pers').hide();
+            $('.botao_mais').hide();
+            $('.botao_menos').hide();
+            $('.botao_ok').hide();
+            $('.quantidade').hide();
+
+            selected = null;
+
+            activaPopupIngr();
+
+            comidaActual = null;
+        }
+
+        function podeConfirmar() {
+          if(doses == 0)
+            $("#confirmar_pers").attr("disabled", true);
+          else $("#confirmar_pers").attr("disabled", false);
+        }
+
+        function cancelarPers(){
+          $(".help_pers").hide();
+        }
+
+        function drawBurger() {
+            clearCanvas();
+
+            var maxIngredientSpace = canvas.height / 2 - 10;
+            var ingredientHeight = maxIngredientSpace/5;
+
+            var ingredientTop = canvas.height / 2 - ingredientHeight * doses / 2;
+
+            var ingredientBot = ingredientTop + ingredientHeight * doses; 
+
+            var ingPlace = ingredientTop;
+            for(componente in comidaActual) {
+                canvasContext.fillStyle = coresComidas[componente];
+                var quantidade = comidaActual[componente];
+                canvasContext.fillRect(canvas.width/5, ingPlace, canvas.width*3/5, ingredientHeight*quantidade);
+                ingPlace += ingredientHeight*quantidade;
+            }
+
+            canvasContext.save();
+            canvasContext.scale(1, 0.33);
+            canvasContext.beginPath();
+            canvasContext.arc(canvas.width/2, 3*ingredientTop, canvas.height/2, Math.PI, 0);
+            canvasContext.closePath();
+            canvasContext.lineWidth=5;
+            canvasContext.stroke();
+            canvasContext.beginPath();
+            canvasContext.arc(canvas.width/2, 3*ingredientBot + 5, canvas.height/2, 0, Math.PI);
+            canvasContext.closePath();
+            canvasContext.lineWidth=5;
+            canvasContext.stroke();
+            canvasContext.restore();
+        }
+
+        function clearCanvas() {
+          canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function apagaItem(elem){
+            $(elem).parent().parent().remove();
+            calculaTotal();
+        }
+
+
+        function calculaTotal(){
+            var total = 0;
+            $('#tabela_pedido tbody tr td .preco_no_pedido').each(function(){
+              total +=  parseFloat($(this).text().slice(0,-1)); //Removes € from string
+            });
+            
+            if(total <= 0){
+              escondeBotoes();
+            }
+            else mostraBotoes();
+
+            $('#valor_total').text(total.toFixed(2) + "€");
+        }
+
+        function escondeBotoes(){
+          $('#botao_limpar').hide();
+          $('#botao_confirmar').hide();
+        }
+
+        function mostraBotoes(){
+          $('#botao_limpar').show();
+          $('#botao_confirmar').show();
+        }
+
+        $("document").ready(function() {
+          
+          $('#tabela_lista_comidas tbody tr td div:first-child').each(function(){
+            var currentHtml = $(this).html();
+            var personalizavel = false;
+            if(comidas[$(this).text()] != null){
+              personalizavel = true;
+            }
+            $(this).after((personalizavel ? "<div class=\"botao_pers\"><span>Personalizar</span></div>" : "<div class='no_pers'></div>") + "<div class=\"botao_menos\"><img src='imagens/menos.png' /></div><div class=\"quantidade\">1</div><div class=\"botao_mais\"><img src='imagens/mais.png' /></div><div class=\"botao_ok\"><span>OK</span></div>");
+          });
+
+          $('.botao_mais').click(function(e){
+            e.stopPropagation();
+            var qtdChar = $(this).siblings('.quantidade').text();
+            var qtd = parseInt(qtdChar);
+
+            $(this).siblings('.quantidade').text(qtd + 1);
+
+            var precoChar = $(this).siblings('.preco').text();
+            var precoCharEsc = precoChar.slice(0, -1); //removes € from string
+            var novoPreco = parseFloat(precoCharEsc) / qtd * (qtd + 1);
+            var precoComSym = novoPreco.toFixed(2) + "€";
+
+            $(this).siblings('.preco').text(precoComSym);
+
+            $(this).siblings('.botao_menos').children().css("opacity", "1.0");
+          });
+
+          $('.botao_menos').click(function(e){
+            e.stopPropagation();
+            var qtdChar = $(this).siblings('.quantidade').text();
+            var qtd = parseInt(qtdChar);
+            if(qtd - 1 != 0) {
+              
+              $(this).siblings('.quantidade').text(qtd - 1);
+
+              var precoChar = $(this).siblings('.preco').text();
+              var precoCharEsc = precoChar.slice(0, -1); //removes € from string
+              var novoPreco = parseFloat(precoCharEsc) / qtd * (qtd - 1);
+              var precoComSym = novoPreco.toFixed(2) + "€";
+
+              $(this).siblings('.preco').text(precoComSym);
+            }
+
+            if(qtd <= 2)
+              $(this).children().css("opacity", "0.3");
+
+          });
+
+          $('.botao_pers').click(function(e){
+            e.stopPropagation();
+            personalizar($(this).siblings(".nome_comida").text());
+          });
+
+          $('#aperitivos, #tostas, #hamburgueres, #pizzas').unbind("click");
+          $('#aperitivos, #tostas, #hamburgueres, #pizzas').click(function(e) {
+            e.stopPropagation();
+          })
+
+          function setOriginalPrice(elem){
+
+            var qtdChar = $(elem).siblings('.quantidade').text();
+            var qtd = parseInt(qtdChar);
+
+            $(elem).siblings('.quantidade').text(1);
+
+            var precoChar = $(elem).siblings('.preco').text();
+            var precoCharEsc = precoChar.slice(0, -1); //removes € from string
+            var novoPreco = parseFloat(precoCharEsc) / qtd;
+            var precoComSym = novoPreco.toFixed(2) + "€";
+
+            $(elem).siblings('.preco').text(precoComSym);
+          }
+          
+          $('#tabela_lista_comidas tbody tr td').click(function(){
+
+            $(this).children('.botao_pers').toggle();
+            $(this).children('.botao_mais').toggle();
+            $(this).children('.botao_menos').toggle();
+            $(this).children('.botao_menos').children().css("opacity", "0.3");
+            $(this).children('.botao_ok').toggle();
+            $(this).children('.quantidade').toggle();
+            setOriginalPrice($(this).children('.nome_comida'));
+
+            if(selected != null && selected.is($(this).children('.nome_comida'))) {
+              selected = null;
+              return;
+            }
+
+            if(selected != null && !selected.is($(this).children('.nome_comida'))) {
+              setOriginalPrice(selected);
+              $(selected).siblings('.botao_pers').toggle();
+              $(selected).siblings('.botao_mais').toggle();
+              $(selected).siblings('.botao_menos').toggle();
+              $(selected).siblings('.botao_ok').toggle();
+              $(selected).siblings('.quantidade').toggle();
+            } 
+            selected = $(this).children('.nome_comida');
+
+
+          });
+
+          $('.botao_ok').click(function(e){
+            e.stopPropagation();
+            var oldQtd = $(this).siblings('.quantidade').text();
+            var oldPrice = $(this).siblings('.preco').text();
+            setOriginalPrice(this); 
+
+            $(this).siblings('.botao_pers').hide();
+            $(this).siblings('.botao_mais').hide();
+            $(this).siblings('.quantidade').hide();
+            $(this).siblings('.botao_menos').hide();
+            $(this).hide();
+
+            selected = null;
+
+            var html = "<tr><td><section class=\"botao_apagar_item\"> <img class='trash' src='imagens/trashblack.png'/> </section><section class=\"qtd_no_pedido\">" + oldQtd + "</section><section class=\"nome_no_pedido\">" + $(this).siblings('.nome_comida').text() + "</section><section class=\"preco_no_pedido\">" + parseFloat(oldPrice).toFixed(2) + "€</section></td></tr>";
+
+            $('#tabela_pedido tbody').append(html);
+
+            $(".botao_apagar_item" ).on( "click", function() {
+                  apagaItem(this);
+              });
+
+            calculaTotal();
+            activaPopupIngr();
+          });
+
+          $('.botao_apagar_item').click(function(){
+            apagaItem(this);
+          });
+
+          calculaTotal();
+
+
+          $('#botao_conf_popup').click(function(){
+              limparPersistenciaSeleccao();
+          
+             var contadorItems = sessionStorage.getItem('contadorItems');
+
+             $('#tabela_pedido tbody tr td').each(function(){
+                contadorItems++;
+                sessionStorage.setItem('contadorItems', contadorItems);
+                
+                var nome = $(this).children('.nome_no_pedido').html();
+                var qtd = $(this).children('.qtd_no_pedido').text();
+                var preco = $(this).children('.preco_no_pedido').text();  
+
+                var nomeVar = "nome" + contadorItems;
+                sessionStorage.setItem(nomeVar, nome);
+                nomeVar = "qtd" + contadorItems;
+                sessionStorage.setItem(nomeVar, qtd);
+                nomeVar = "preco" + contadorItems;
+                sessionStorage.setItem(nomeVar, preco);
+                
+             });
+             if($('#tabela_pedido tbody tr td').size() > 0){
+             window.location.replace("barista.html");
+            }
+
+          }); 
+
+          $('#botao_confirmar').click(function(){
+            $('.help').hide();
+            if($('#tabela_pedido tbody tr td').size() > 0){
+              $('#dummy').click();
+            }
+          });
+          
+          $('#botao_limpar_popup').click(function(){
+              $('#tabela_pedido tbody').html("");
+              limparPersistenciaSeleccao();
+              calculaTotal();
+          });
+
+          $('#botao_limpar').click(function(){
+            $('.help').hide();
+          });
+        });
+      </script>
+
+      <script type="text/javascript">
+            $("document").ready(function() {
+                    
+                var total = sessionStorage.getItem('totalPagamento');
+                 $('#totalPagamento').text(total + "€");
+
+            });
+
+        </script>
+
+     <script type="text/javascript">
+            $("document").ready(function() {
+                var contadorItems = sessionStorage.getItem('contadorSel');
+                  if(contadorItems > 0)
+                  for (var i = 0; i  < contadorItems; i++) {
+                    var nomeTempVar = "nomeSel" + (i + 1);
+                    var qtdTempVar = "qtdSel" + (i + 1);
+                    var precoTempVar = "precoSel" + (i + 1);
+                    var componentesTempVar = "componentesSel" + (i + 1);
+                    var componentes = sessionStorage.getItem(componentesTempVar);
+                    var compString = "";
+
+                    if(componentes != null)
+                      compString = "<section class='componentes'>" + componentes + "</section>";
+
+                    var html = "<tr><td><section class=\"botao_apagar_item\"> <img class='trash' src='imagens/trashblack.png'/> </section><section class=\"qtd_no_pedido\">" + sessionStorage.getItem(qtdTempVar) + "</section><section class=\"nome_no_pedido\">" + sessionStorage.getItem(nomeTempVar) + "</section><section class=\"preco_no_pedido\">" + sessionStorage.getItem(precoTempVar) + "</section>" + compString + "</td></tr>";
+                    $('#tabela_pedido tbody').append(html);
+                        $(".botao_apagar_item" ).on( "click", function() {
+                            apagaItem(this);
+                        });
+                    };
+
+                 calculaTotal();
+                 activaPopupIngr(); 
+             });
+          
+           function persistenciaSeleccao(){
+              
+              if($('#tabela_pedido tbody tr td').size() > 0){
+                    var contadorItems = 0;
+                    $('#tabela_pedido tbody tr td').each(function(){
+                        contadorItems++;
+                        
+
+                        var nome = $(this).children('.nome_no_pedido').html();
+                        var qtd = $(this).children('.qtd_no_pedido').text();
+                        var preco = $(this).children('.preco_no_pedido').text();  
+                        var componentes = $(this).children('.componentes').html();
+                        var nomeVar = "nomeSel" + contadorItems;
+
+                        sessionStorage.setItem(nomeVar, nome);
+                        nomeVar = "qtdSel" + contadorItems;
+                        sessionStorage.setItem(nomeVar, qtd);
+                        nomeVar = "precoSel" + contadorItems;
+                        sessionStorage.setItem(nomeVar, preco);
+
+                        if(componentes != null){
+                          nomeVar = "componentesSel" + contadorItems;
+                          sessionStorage.setItem(nomeVar, componentes);
+                        }
+                    });
+                    sessionStorage.setItem('contadorSel', contadorItems);
+                  
+                  
+              }
+            }
+            
+            function limparPersistenciaSeleccao(){
+                sessionStorage.setItem('contadorSel', 0);  
+            }
+          
+            //VOLTAR
+            function voltar() {
+                persistenciaSeleccao();
+                window.location = "barista.html";
+            }
+            
+            function goToConversas() {
+                persistenciaSeleccao();
+                window.location = "conversas.html";
+            }
+            
+            function goToPagamentos() {
+                persistenciaSeleccao();
+                window.location = "pagamentos.html";
+            }
+      </script>
+        
+        <script src="total_icone.js"></script>
+    </head>
+
+    <body>
+        <div id="header">
+            <div id="logoContainer">
+                <a onClick="voltar()">
+                    <img id="logo" src="imagens/logosimple.png" />
+                </a>
+            </div>
+            <div id="titleContainer">
+                <span id="title">Comidas</span>
+            </div>
+            <div id="navigation">
+                <div class="navImgContainer">
+                    <a onClick="goToConversas()">
+                        <img class="msg navImg" src="imagens/mensagens.png" />
+                    </a>
+                </div>
+                <div class="navImgContainer">
+                    <a onClick="goToPagamentos()">
+                        <img class="navImg" src="imagens/pagamentos.png" />
+                    </a>
+                    <div id="total_pagamento"></div>
+                </div> 
+                <div class="navImgContainer">
+                    <a onclick="toggleHelp()">
+                        <img class="navImg" src="imagens/ajuda.png" />
+                    </a>
+                </div>  
+            </div>
+        </div>
+        <div id="content">
+            
+            <!-- highlight da categoria de comidas -->
+                
+            <script type="text/javascript">
+              
+              function tiraActiveDosOutro() {
+                $('#categoria_comidas ul a').each(function(){
+                  $(this).removeClass("selected");
+                })
+              }
+
+             $(document).ready(function () {
+
+                $('a[href^="#"]').click(function (){
+                  tiraActiveDosOutro();
+                  $(this).addClass("selected");
+                });
+
+                $('#lista_comidas_scroll').scroll(function() {
+                  var aperitivosPos = $('#aperitivos').offset().top - $('#lista_comidas_scroll').offset().top;
+                  var tostasPos = $('#tostas').offset().top  - $('#lista_comidas_scroll').offset().top;
+                  var hamburgueresPos = $('#hamburgueres').offset().top  - $('#lista_comidas_scroll').offset().top;
+                  var pizzasPos = $('#pizzas').offset().top  - $('#lista_comidas_scroll').offset().top;
+
+
+                  if(aperitivosPos < 0 && tostasPos > 0){
+                    tiraActiveDosOutro();
+                    $('#menuAperitivos').addClass("selected");
+                  } else if(tostasPos < 0 && hamburgueresPos > 0){   
+                    tiraActiveDosOutro(); 
+                    $('#menuTostas').addClass("selected");
+                  } else if(hamburgueresPos < 0 && pizzasPos > 0) {
+                    tiraActiveDosOutro(); 
+                    $('#menuHamburgueres').addClass("selected");
+                  } else if(pizzasPos < 0){
+                    tiraActiveDosOutro(); 
+                    $('#menuPizzas').addClass("selected");
+                  }
+                   
+                });
+
+             });
+
+            </script>
+
+            <div id="categoria_comidas">
+              <ul>
+                <a id="menuAperitivos" class="selected" href="#aperitivos"><li>Aperitivos</li> </a>
+                <a id="menuTostas" href="#tostas"> <li>Tostas</li> </a>
+                <a id="menuHamburgueres" href="#hamburgueres"> <li>Hamburgueres</li> </a>
+                <a id="menuPizzas" href="#pizzas"> <li>Pizzas</li> </a>
+              </ul>
+             
+            </div>
+
+            <div id="lista_comidas">
+              <div id="lista_comidas_scroll"> 
+                <table id="tabela_lista_comidas">
+                  <tbody>
+                    <tr class="categoriaComida">
+                      <td>
+                        <div id="aperitivos" class="nome_comida"><b>Aperitivos</b></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Amendoins</div>
+                         <div class="preco">1.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Batatas Fritas</div>
+                         <div class="preco">1.50€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Camarões</div>
+                         <div class="preco">5.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Caracóis</div>
+                         <div class="preco">3.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Pica-paus</div>
+                         <div class="preco">3.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Tremoços</div>
+                         <div class="preco">1.70€</div>
+                      </td>
+                    </tr>
+                    <tr class="categoriaComida">
+                      <td>
+                        <div id="tostas" class="nome_comida"><b>Tostas</b></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Atum</div>
+                         <div class="preco">2.50€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Frango</div>
+                         <div class="preco">2.50€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Mista</div>
+                         <div class="preco">2.00€</div>
+                      </td>
+                    </tr>
+                    <tr class="categoriaComida">
+                      <td>
+                        <div id="hamburgueres" class="nome_comida"><b>Hamburgueres</b></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Cheeseburguer</div>
+                         <div class="preco">3.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Hamburguer Barista</div>
+                         <div class="preco">4.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Hamburguer Simples</div>
+                         <div class="preco">3.50€</div>
+                      </td>
+                    </tr>
+                    <tr class="categoriaComida">
+                      <td>
+                        <div id="pizzas" class="nome_comida"><b>Pizzas</b></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Barbecue</div>
+                         <div class="preco">4.50€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Camarão</div>
+                         <div class="preco">4.50€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Carbonara</div>
+                         <div class="preco">4.50€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Formaggio</div>
+                         <div class="preco">4.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Havaiana</div>
+                         <div class="preco">34.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Marguerita</div>
+                         <div class="preco">3.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Pepperoni</div>
+                         <div class="preco">4.50€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Piccanti</div>
+                         <div class="preco">3.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Primavera</div>
+                         <div class="preco">3.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Quatro Estações</div>
+                         <div class="preco">4.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Quatro Queijos</div>
+                         <div class="preco">4.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Tropical</div>
+                         <div class="preco">4.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Tuna</div>
+                         <div class="preco">3.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_comida">Vegetariana</div>
+                         <div class="preco">3.00€</div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div id="pedido_corrente"> 
+              <div id="pedido_title">Selec&ccedil;&atilde;o Actual</div>
+              <div id="tabela_pedido_container">
+                <table id="tabela_pedido">
+                  <tbody>
+                  
+                  </tbody>
+                </table>
+              </div>
+              <div id="total_container">Total: <span id="valor_total"></span> </div>
+              <div id="pedido_botoes_container">
+              <div id="botao_limpar">
+                  Limpar
+              </div>
+              <div id="botao_confirmar">
+                 Confirmar
+              </div>
+            </div>
+            </div>
+        </div>
+        <div id="flutuantes">
+            <div id="voltar">
+                <a onclick="voltar()">
+                    <img id ="voltarImg" src="imagens/voltar.png">
+                </a>
+            </div>
+
+            <div id="ajudas">
+                <div class="help" id="help1">&larr; 1. Seleccione a categoria</div>
+                <div class="help" id="help2">&uarr; 2. Toque na comida pretendida para obter opções</div>
+                <div class="help" id="help3">3. Verifique ou altere o seu pedido &rarr;</div>
+                <div class="help" id="help4">4. Confirme o pedido &rarr;</div>
+            </div>
+
+            <div class="ink-shade fade">
+              <div class="ink-modal" data-trigger=".botao_pers" data-width="800px" data-height="600px">
+                <div class="modal-header">
+                  <a onclick="toggleHelpPers()">
+                    <img id="ajuda_pers" src="imagens/ajuda.png">
+                  </a>
+                  <h2>Personalizar <span id="titulo_pers"></span></h2>
+                </div>
+                <div class="modal-body">
+                  <div id="ajudasPop">
+                    <div class="help" id="ajudaPop1">&darr; 1. Seleccione a(s) comidas(s) desejada(s)</div>
+                    <div class="help" id="ajudaPop2">&uarr; 2. Regule a quantidade de cada comida</div>
+                    <div class="help" id="ajudaPop3">&uarr; 3. Indique quantas unidades deseja</div>
+                  </div>
+
+                  <div id="dispensa">
+                    <div class="dispensa_item" onclick="javascript:adicionaComida('Hamburguer')">
+                      <img class="dispensaIMG" src="imagens/burger.png"/>
+                      <div class="dispensa_legenda">Hamburguer</div>
+                    </div>
+
+                    <div class="dispensa_item" onclick="javascript:adicionaComida('Bacon')">
+                      <img class="dispensaIMG" src="imagens/bacon.png"/>
+                      <div class="dispensa_legenda">Bacon</div>
+                    </div>
+
+                    <div class="dispensa_item" onclick="javascript:adicionaComida('Queijo')">
+                      <img class="dispensaIMG" src="imagens/queijo.png"/>
+                      <div class="dispensa_legenda">Queijo</div>
+                    </div>
+
+                    <div class="dispensa_item" onclick="javascript:adicionaComida('Fiambre')">
+                      <img class="dispensaIMG" src="imagens/fiambre.png"/>
+                      <div class="dispensa_legenda">Fiambre</div>
+                    </div>
+
+                    <div class="dispensa_item" onclick="javascript:adicionaComida('Alface')">
+                      <img class="dispensaIMG" src="imagens/alface.png"/>
+                      <div class="dispensa_legenda">Alface</div>
+                    </div>
+
+                    <div class="dispensa_item" onclick="javascript:adicionaComida('Tomate')">
+                      <img class="dispensaIMG" src="imagens/tomate.png"/>
+                      <div class="dispensa_legenda">Tomate</div>
+                    </div>
+
+                    <div class="dispensa_item" onclick="javascript:adicionaComida('Cebola')">
+                      <img class="dispensaIMG" src="imagens/cebola.png"/>
+                      <div class="dispensa_legenda">Cebola</div>
+                    </div>
+
+                    <div class="dispensa_item" onclick="javascript:adicionaComida('Pickles')">
+                      <img class="dispensaIMG" src="imagens/pickles.png"/>
+                      <div class="dispensa_legenda">Pickles</div>
+                    </div>
+
+                    <div class="dispensa_item" onclick="javascript:adicionaComida('Ketchup')">
+                      <img class="dispensaIMG" src="imagens/ketchup.png"/>
+                      <div class="dispensa_legenda">Ketchup</div>
+                    </div>
+
+                    <div class="dispensa_item" onclick="javascript:adicionaComida('Maionese')">
+                      <img class="dispensaIMG" src="imagens/maionese.png"/>
+                      <div class="dispensa_legenda">Maionese</div>
+                    </div>
+
+                  </div>
+                  <div id="status">
+                    <div id="status_pers">
+                      <table id="tabela_pers">
+                        <tbody>
+                       </tbody>
+                     </table>
+                    </div>
+                    <div id="total_pers_container">
+                      <section id="total_pers_text"><span class='personalizado'>*</span> <span id="titulo_pers2"></span></section>
+                      <section id="pers_menos_qtd" onclick="javascript:reduzirQuantidadePedidoPersonalizado()"><img src="imagens/menos.png"/></section>
+                      <section id="pers_qtd">1</section>
+                      <section id="pers_mais_qtd" onclick="javascript:aumentarQuantidadePedidoPersonalizado()"><img src="imagens/mais.png"/></section>
+                      <section id="total_pers">0.00€</section> 
+                    </div>                      
+                  </div>
+                  <div id="copo">
+                    <canvas id="copoCanvas"></canvas>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="ink-dismiss pop_bot_left" onclick="javascript:cancelaToggleHelp()">Cancelar</div>
+                    <div class="ink-dismiss pop_bot_right" id="confirmar_pers" onclick="javascript:cancelaToggleHelp()">Confimar</div>
+                </div>
+              </div>
+            </div>
+
+            <div id="popup_confirm" class="ink-shade fade">
+              <div class="ink-modal"  data-trigger="#dummy" data-width="400px" data-height="200px">
+                <div class="modal-body">
+                   <p><p><p><center> Deseja confirmar o pedido? </center>
+                
+                </div>
+                <div class="modal-footer">
+                  <div class="ink-dismiss pop_bot_left">N&atilde;o</div>
+                  <div class="ink-dismiss pop_bot_right" id="botao_conf_popup">Sim</div> 
+                  <!--div class="center">
+
+                    <button class="ink-dismiss bi-botao">Não</button>
+                    <button class="ink-dismiss bi-botao" id="botao_conf_popup">Sim</button>
+                    
+                  </div-->
+                </div>
+              </div>
+            </div>
+
+            <div id="popup_limpar" class="ink-shade fade">
+              <div class="ink-modal"  data-trigger="#botao_limpar" data-width="400px" data-height="200px">
+                <div class="modal-body">
+                   <p><p><p><center> Deseja limpar a lista de pedidos? </center>
+                
+                </div>
+                <div class="modal-footer">
+                  <div class="ink-dismiss pop_bot_left">N&atilde;o</div>
+                  <div class="ink-dismiss pop_bot_right" id="botao_limpar_popup">Sim</div> 
+                  <!--div class="center">
+
+                    <button class="ink-dismiss bi-botao">Não</button>
+                    <button class="ink-dismiss bi-botao" id="botao_conf_popup">Sim</button>
+                    
+                  </div-->
+                </div>
+              </div>
+            </div>
+            <div id="dummy"></div>
+
+            <div id="debug"></div>
+            
+            <div id="dummy_ingr"></div>
+
+            <!-- Pop up ingredientes -->
+
+            <div  id="popup_ingr" class="ink-shade fade">
+              <div class="ink-modal"  data-trigger="#dummy_ingr" data-width="450px" data-height="350px">
+                <div class="modal-header">
+                  <h2><span id="titulo_ingr"></span><span id="preco_unitario"></span></h2>
+                </div>
+                <div class="modal-body">
+                  <div id="ingr_list_container"></div>
+                  <div id="ingr_qtd_container"> 
+                    <section id="ingr_menos_qtd" onclick="javascript:reduzirQuantidadeIngr()"><img src="imagens/menos.png"/></section>
+                    <section id="ingr_qtd"></section>
+                    <section id="ingr_mais_qtd" onclick="javascript:aumentarQuantidadeIngr()"><img src="imagens/mais.png"/></section>
+                  </div>
+                </div>
+                
+                <div class="modal-footer">
+                  <div class="center">
+                    <div class="ink-dismiss pop_bot_left">Cancelar</div>
+                    <div class="ink-dismiss pop_bot_right" id="confirmar_ingr">Confirmar</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    <body>
+</html>

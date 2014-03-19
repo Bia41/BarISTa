@@ -1,0 +1,838 @@
+#content {
+  text-align: left;
+  color: black;
+  margin: collapse;
+}
+
+#flutuantes {
+  text-align: left;
+  color: black;
+}
+
+.active {
+    color: red;
+}
+
+#debug {
+  position: absolute;
+  bottom: 2%;
+  color: white;
+}
+
+#help1 {
+  top: 22%;
+  left: 13%;
+}
+
+#help2 {
+  top: 59%;
+  left: 19%;
+}
+
+#help3 {
+  top: 32%;
+  right: 29%;
+}
+
+#help4 {
+  top: 82%;
+  right: 29%;
+}
+
+#ajudaPop1 {
+  top: 5%;
+  left: 40%;
+}
+
+#ajudaPop2 {
+  top: 50%;
+  left: 30%;
+}
+
+#ajudaPop3 {
+  top: 90%;
+  left: 30%;
+}
+
+#totalPagamento {
+  font-size: 75%;
+  color: blue;
+  position: absolute;
+  right: 10%;
+  top: 25%;
+}
+
+#pedido_botoes_container {
+  height: 10%;
+  width: 100%;
+  //padding-top: 5%;
+}
+
+#botao_confirmar {
+	float: right;
+  width: 30%;
+  //top: 80%;
+  //height: 10%;
+	//right: 4.5%;
+	//bottom: 30%;
+  //margin-top: 0%;
+  //margin-bottom: 10%;
+  margin-right: 5%;
+  
+	text-align: center;
+
+	background-color: white;
+  border: medium solid grey;
+  border-radius: 5px;
+
+  padding: 10px;
+}
+
+#botao_limpar {
+  float: left;
+  width: 30%;
+	//right: 21.5%;
+	//bottom: 11%;
+  //margin-bottom: 30%;
+  margin-left: 5%;
+
+	text-align: center;
+
+	background-color: white;
+  border: medium solid grey;
+  border-radius: 5px;
+
+  padding: 10px;
+    
+}
+
+#categoria_bebidas {
+	float: left;
+  width: 10%;
+  height: 70%;
+
+  margin-top: 5%;
+  margin-left: 2%;
+  margin-right: 2%;
+
+  /*background-color: white;
+  border-radius: 5px;
+  color: black;
+  text-align: left;
+  border: thick solid grey;
+  border-radius: 5px;*/
+}
+
+/*ul {
+  position: absolute;
+  top: 5%;
+  left: 0%;
+
+  height: 100%; 
+  width: 60%;
+}
+
+li {
+  padding: 5%;
+  margin-bottom: 10%;
+  margin-top: 5%;
+  border: 1px solid black;
+  list-style-type: none;
+
+  border-radius: 5px;
+}*/
+
+#categoria_bebidas ul {
+  height: 100%; 
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+#categoria_bebidas li {
+  list-style-type: none;
+  background-color: white;
+
+  border: thick solid grey;
+  border-radius: 5px;
+  padding: 10%;
+  margin-bottom: 15%;
+}
+
+#categoria_bebidas a {
+  text-decoration: none;
+  color: black;
+}
+
+#categoria_bebidas a:visited {
+  text-decoration: none;
+  color: black;
+}
+
+#categoria_bebidas a:hover {
+  text-decoration: none;
+  color: lightgrey;
+}
+
+#categoria_bebidas a.selected li {
+  background-color: lightgrey; 
+  color: dodgerblue;
+}
+
+#pedido_corrente{
+	height: 85%;
+	width: 26%;
+  margin-top: 5%;
+  margin-left: 2%;
+
+	float: left;
+
+	background-color: white;
+	border-radius: 5px;
+  color: black;
+  text-align: left;
+  border: thick solid grey;
+  border-radius: 5px;
+}
+
+/*#pedido_corrente div:first-child*/
+
+#pedido_title{
+  height: 10%;
+  padding-top: 5%;
+  width: 100%;
+	text-align: center;
+  border-bottom: thick solid grey;
+  font-size: 3vh;
+}
+
+/*#pedido_corrente div:nth-child(2)*/
+
+#tabela_pedido_container {
+	height: 60%;
+  width: 100%;
+  overflow: auto; 
+}
+
+.trash {
+  //padding-top: 30%;
+  height: 7%;
+  vertical-align: middle;
+}
+
+/*#pedido_corrente div:nth-child(3)*/
+
+#total_container {
+  font-size: 4vh;
+  height: 10%;
+
+  text-align: left;
+  width:90%;
+  margin-top: 5%;
+  margin-left: 5%;
+}
+
+#valor_total {
+  text-align: right;
+}
+
+#tabela_pedido {
+  width: 90%;
+  margin-left: 5%;
+
+  vertical-align: center; 
+
+  border-collapse: collapse;
+}
+
+.botao_apagar_item {
+
+  position: absolute;
+  height: 100%;
+  width: 5%;
+  top: 0%;
+  left: 0%;
+  //border: 1px solid black;
+  color: rgb(129,129,129);
+}
+
+.qtd_no_pedido {
+  position: absolute;
+  height: 100%;
+  width: 10%;
+  top: 0%;
+  left: 10%;
+  //border: 1px solid black;
+
+  text-align: center;
+}
+
+
+.nome_no_pedido {
+  position: absolute;
+  height: 100%;
+  width: 60%;
+  top: 0%;
+  left: 25%;
+  //border: 1px solid black;
+}
+
+.preco_no_pedido {
+  position: relative;
+  height: 100%;
+  width: 10%;
+  top: 0%;
+  left: 85%;
+  //border: 1px solid black;
+}
+
+#valor_total {
+  float: right;
+}
+
+#lista_bebidas{
+  float: left;
+  width: 50%;
+  height: 85%;
+  margin-top: 5%;
+  margin-right: 2%;
+  margin-left: 2%;
+  background: white;
+  color: black;
+  text-align: left;
+  border: thick solid grey;
+  border-radius: 5px;
+}
+
+#lista_bebidas_scroll {
+  height: 100%;
+  width: 100%;
+  overflow: auto; 
+}
+
+#tabela_lista_bebidas {
+  width: 100%;
+
+  vertical-align: center; 
+
+  border-collapse: collapse;
+}
+
+#tabela_lista_bebidas tbody tr td{
+  padding-left: 2%;
+  padding-right: 2%;
+}
+
+#vinhos, #cocktails, #chasCafes, #cervejas, #bebidasBrancas, #aguasSumos {
+  width: 100%;
+}
+
+.categoriaBebida {
+  background-color: lightgrey;
+}
+
+tbody {
+	display: block;
+	height: 100%;
+	width: 100%;
+	overflow: auto;	
+}
+
+td{
+	position: relative;
+	width: 10000000000000000000px; //very ugly hack
+
+}
+tr{
+	position: relative;
+	line-height: 300%;
+	border-bottom: 2px solid lightgrey;//rgb(229,229,229);
+}
+
+.nome_bebida {
+  float: left;
+  height: 100%;
+  width: 30%;   
+}
+
+.botao_pers {
+  display: none;
+  float: left;
+  width: 18%;
+  height: 100%;
+  text-align: right;
+  //line-height: 170%;
+  font-size: 100%;
+}
+
+.botao_pers span, .botao_ok span  {
+  padding: 5px 5px 5px 5px;
+  background-color: white;
+  border: medium solid grey;
+  border-radius: 5px;
+
+}
+
+.botao_pers img, .botao_ok img {
+  height: 25%;
+  vertical-align: middle;
+}
+
+.botao_mais img, .botao_menos img {
+  height: 15%;
+  vertical-align: middle;
+}
+
+.mais_pers img, .menos_pers img {
+  height: 15%;
+  vertical-align: middle;
+}
+
+.no_pers{
+  float: left;
+  width: 18%;
+  min-height: 1px;
+  }
+
+.botao_mais {
+    margin-right: 8%;
+  display: none;
+  float: left;
+  height: 100%;
+  width: 5%;
+  text-align: left;
+}
+
+.quantidade {
+  display: none;
+  float: left;  
+  height: 100%;
+  width: 8%;
+  text-align: center;
+}
+
+.botao_menos {
+  margin-left: 8%;
+  display: none;
+  float: left;
+  min-height: 1px;  
+  height: 100%;
+  width: 5%;
+  text-align: right;
+}
+
+.botao_ok {
+  display: none;
+  float: left;  
+  height: 100%;
+  width: 5%;
+  text-align: left;
+}
+
+.preco {
+  float: right;
+  height: 100%;
+  width: 7%; 
+  text-align: right;
+}
+
+
+.ink-shade {
+  background: rgba(0, 0, 0, 0.8);
+  width: 100%;
+  height: 100%;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin-top: 0;
+  position: fixed;
+  z-index: 100;
+  display: none;
+  filter: alpha(opacity=0);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  opacity: 0;
+}
+.ink-shade.fade {
+  -webkit-transition-property: opacity;
+  -moz-transition-property: opacity;
+  -o-transition-property: opacity;
+  -ms-transition-property: opacity;
+  transition-property: opacity;
+  -webkit-transition-duration: 300ms;
+  -moz-transition-duration: 300ms;
+  -o-transition-duration: 300ms;
+  -ms-transition-duration: 300ms;
+  transition-duration: 300ms;
+  -webkit-transition-timing-function: ease-in-out;
+  -moz-transition-timing-function: ease-in-out;
+  -o-transition-timing-function: ease-in-out;
+  -ms-transition-timing-function: ease-in-out;
+  transition-timing-function: ease-in-out;
+  -webkit-transition-delay: 0;
+  -moz-transition-delay: 0;
+  -o-transition-delay: 0;
+  -ms-transition-delay: 0;
+  transition-delay: 0;
+}                               
+.ink-shade.visible {
+  filter: alpha(opacity=100);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  opacity: 1;
+}
+
+.ink-modal {
+  top: 50%;
+  left: 50%;
+  width: 90%;
+  height: 90%;
+  background: #ffffff;
+  z-index: 100;
+  position: absolute;
+  border: 1px #666666 solid;
+  filter: alpha(opacity=100);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  opacity: 1;
+  -webkit-box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.8);
+  -moz-box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.8);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.ink-modal:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+  zoom: 1;
+}
+.ink-modal > .modal-body {
+  padding: 1em;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: auto;
+}
+.ink-modal > .modal-body .ink-grid {
+  padding-left: 0;
+  padding-right: 0;
+  width: 100%;
+  min-width: 100%;
+}
+.ink-modal > .modal-header,
+.ink-modal > header {
+  border-bottom: 1px #e6e6e6 solid;
+  overflow: hidden;
+  -webkit-box-shadow: 0 1px 2px 0 rgba(175, 175, 175, 0.2);
+  -moz-box-shadow: 0 1px 2px 0 rgba(175, 175, 175, 0.2);
+  box-shadow: 0 1px 2px 0 rgba(175, 175, 175, 0.2);
+}
+.ink-modal > .modal-header > .modal-close,
+.ink-modal > header > .modal-close {
+  padding-top: 2px;
+  text-align: center;
+  color: #ffffff;
+  width: 26px;
+  height: 26px;
+  line-height: 1.2em;
+  border: 0;
+  background: #bfbfbf;
+  font-size: 0;
+  border-radius: 50%;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6);
+  filter: alpha(opacity=60);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+  opacity: 0.6;
+  -webkit-transition-property: opacity;
+  -moz-transition-property: opacity;
+  -o-transition-property: opacity;
+  -ms-transition-property: opacity;
+  transition-property: opacity;
+  -webkit-transition-duration: 125ms;
+  -moz-transition-duration: 125ms;
+  -o-transition-duration: 125ms;
+  -ms-transition-duration: 125ms;
+  transition-duration: 125ms;
+  -webkit-transition-timing-function: ease-in-out;
+  -moz-transition-timing-function: ease-in-out;
+  -o-transition-timing-function: ease-in-out;
+  -ms-transition-timing-function: ease-in-out;
+  transition-timing-function: ease-in-out;
+  -webkit-transition-delay: 0;
+  -moz-transition-delay: 0;
+  -o-transition-delay: 0;
+  -ms-transition-delay: 0;
+  transition-delay: 0;
+  float: right;
+}
+.ink-modal > .modal-header > .modal-close:after,
+.ink-modal > header > .modal-close:after {
+  content: "X";
+  font-family: Arial;
+  font-size: medium;
+  line-height: 22px;
+}
+.ink-modal > .modal-header > .modal-close:hover,
+.ink-modal > header > .modal-close:hover {
+  filter: alpha(opacity=100);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  opacity: 1;
+}
+.ink-modal > .modal-footer,
+.ink-modal > footer {
+  background: #e6e6e6;
+  margin-bottom: 0;
+  -webkit-box-shadow: 0 -1px 2px 0 rgba(175, 175, 175, 0.2);
+  -moz-box-shadow: 0 -1px 2px 0 rgba(175, 175, 175, 0.2);
+  box-shadow: 0 -1px 2px 0 rgba(175, 175, 175, 0.2);
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+.ink-modal > .modal-header,
+.ink-modal > header,
+.ink-modal > .modal-footer,
+.ink-modal > footer {
+  padding: 0.8em 1em 0.65em 1em;
+}
+.ink-modal > .modal-header:before,
+.ink-modal > header:before,
+.ink-modal > .modal-footer:before,
+.ink-modal > footer:before,
+.ink-modal > .modal-header:after,
+.ink-modal > header:after,
+.ink-modal > .modal-footer:after,
+.ink-modal > footer:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.ink-modal-open {
+  overflow: hidden;
+}
+
+.push-left {
+  float: left !important;
+}
+.push-right {
+  float: right !important;
+}
+.push-center {
+  float: none !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.bi-botao{
+	margin-right: 25px;
+}
+
+#garrafeira{
+  width: 100%;
+  height: 30%;
+}
+
+#status{
+  width: 60%;
+  height: 70%;
+  float: left;
+}
+
+#copo{
+  width: 40%;
+  height: 70%;
+  float: right;
+}
+
+.garrafeira_item{
+  width: 10%;
+  float: left;
+}
+
+.garrafeiraIMG{
+  width: 100%;
+  height: 90%;
+}
+
+.garrafeira_legenda{
+  width: 100%;
+  height: 10%;
+  text-align: center;
+  font-size: 75%;
+}
+
+#tabela_pers {
+  width: 100%;    
+
+  border-radius: 5px;
+  border-collapse: collapse;
+
+  table-layout: fixed;
+}
+
+#status_pers{
+  width: 100%;
+  height: 90%;
+}
+
+#total_pers_container{
+  width: 100%;
+  height: 9%;
+  padding-top: 1%;
+  font-weight: bold;
+  display: table;
+}
+
+#total_pers{
+  width: 20%;
+  float: right;
+  text-align: right;
+}
+
+#total_pers_text {
+  float: left;
+  width: 50%;
+  text-align: left
+}
+
+#pers_menos_qtd {
+  float: left;
+  width: 10%;
+  min-height: 1px;
+  height: 100%;
+  text-align: center;
+}
+
+#pers_qtd {
+  float: left;
+  width: 10%;
+  text-align: center;
+}
+
+#pers_mais_qtd {
+  float: left;
+  width: 10%;
+  height: 100%;
+  text-align: center;
+}
+
+#pers_mais_qtd img, #pers_menos_qtd img {
+  height: 15%;
+  vertical-align: middle;
+}
+
+.botao_apagar_pers {
+  float: left;
+  height: 100%;
+  width: 5%;
+  width: 10%;
+  color: rgb(129,129,129);
+}
+
+.item_pers {
+  float: left;
+  width: 40%;
+}
+
+.menos_pers {
+  float: left;
+  width: 10%;
+  height:100%;
+  text-align: center;
+  //border: 1px solid black;
+}
+
+.qtd_pers {
+  float: left;
+  width: 10%;
+  text-align: center;
+}
+
+.mais_pers {
+  float: left;
+  width: 10%;
+  height:100%;
+  text-align: center;
+  //border: 1px solid black;
+}
+
+.preco_pers {
+  float: left;
+  width: 20%;
+  text-align: right;
+}
+
+#copoCanvas{
+  width: 100%;
+  height: 80%;
+}
+
+.personalizado {
+  color: red;
+}
+
+#ajuda_pers {
+  position: absolute;
+  top: 30px;
+  right: 16px;
+  width: 30px;
+}
+
+.componentes {
+  display: none;
+}
+
+#ingr_list_container {
+  float: left;
+  width: 50%;
+  height: 100%;
+}
+
+#ingr_list_container li{
+  padding-bottom: 10px;
+}
+
+#ingr_qtd_container {
+  float: left;
+  width: 50%;
+  height: 20%;
+  margin-top: 15%;
+}
+
+#ingr_menos_qtd {
+  float: left;
+  width: 20%;
+  height: 100%;
+  margin-left: 10%;
+  text-align: center;
+}
+
+#ingr_qtd {
+  float: left;
+  width: 40%;
+  text-align: center;
+  font-size: 150%;
+  font-weight: bold;
+}
+
+#ingr_mais_qtd {
+  float: left;
+  width: 20%;
+  height: 100%;
+  text-align: center;
+}
+
+#ingr_mais_qtd img, #ingr_menos_qtd img {
+  height: 35px;
+  width: 35px;
+  vertical-align: middle;
+}
+
+#preco_unitario{
+  float: right;
+  font-size: 100%;
+  font-weight: normal;
+}

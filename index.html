@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Barista</title>
+        <link rel="stylesheet" type="text/css" href="css/barista.css">
+
+        <script type="text/javascript">
+        	window.onclick = function(){window.location = 'barista.html';}
+        </script>
+
+        <script src="jquery.js"></script>
+        
+        <script type="text/javascript">
+            $("document").ready(function() {
+                sessionStorage.clear();
+                sessionStorage.setItem('contadorItems', 0);
+                sessionStorage.setItem('mensagenslidas', false);
+                sessionStorage.setItem('notify', 0);
+                sessionStorage.setItem('contadorSel', 0);
+
+                function generateTimeString(hours, minutes) {
+                    var time = "";
+                    if(hours < 10)
+                        time += "0";
+                    time += hours + ":";
+                    if(minutes < 10)
+                        time += "0";
+                    time += minutes;
+
+                    return time;        
+                }
+
+                var data =  new Date();
+                sessionStorage.setItem('startTime', generateTimeString(data.getHours(), data.getMinutes()));
+            });
+        </script>
+    </head>
+    <body>
+    	<div id="iniciar">
+            <img id="logoImg" src="imagens/logo.png" />
+            <p>Toque para começar</p>
+        </div>
+   	</body>
+</html>

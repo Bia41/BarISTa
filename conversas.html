@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Barista</title>
+        <link rel="stylesheet" href="css/jsKeyboard.css" type="text/css" media="screen"/>
+        <link rel="stylesheet" type="text/css" href="css/conversas.css"/>
+        <link rel="stylesheet" type="text/css" href="css/barista.css"/>
+
+        <script type="text/javascript" src="ink-2.2.1/js/ink.min.js"></script>
+        <script type="text/javascript" src="ink-2.2.1/js/ink-ui.min.js"></script>
+        <script type="text/javascript" src="ink-2.2.1/js/ink.modal.js"></script>
+        <script type="text/javascript" src="ink-2.2.1/js/autoload.js"></script>
+        <script src="jquery.js" ></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="jsKeyboard.js"></script>
+
+        <script type="text/javascript">
+            $("document").ready(function() {
+                    
+                var total = sessionStorage.getItem('totalPagamento');
+                 $('#totalPagamento').text(total + "€");
+
+                 $(".date").text(sessionStorage.getItem('startTime'));
+                 $(".help").hide(); 
+                 $(".caixa_texto").hide();
+            });
+
+            function toggleHelpMesas() {
+                $("#ajudaPop1").toggle();
+                $("#ajudaPop2").toggle();
+            }
+
+            function cancelarMesas(){
+                $("#ajudaPop1").hide();
+                $("#ajudaPop2").hide();
+            }
+        </script>
+
+        <script type="text/javascript">
+            //VOLTAR
+            function voltar() {
+                window.history.back();
+            }
+        </script>
+        
+        <script src="total_icone.js"></script>
+        
+        
+         <script type="text/javascript">
+
+            var disponivel = true;
+
+            function toggleDisponibilidade() {
+                disponivel = !disponivel;
+                if(disponivel) {
+                    $("#disponibilidade > a").css("color", "limegreen");
+                    $("#disponibilidade > a").text("On");
+                    $("#message").attr('disabled', false);
+                    $("#enviar_mensagem").attr('disabled', false);
+                }
+                else {
+                    $("#disponibilidade > a").css("color", "red");
+                    $("#disponibilidade > a").text("Off");
+                    $("#message").attr('disabled', true);
+                    $("#enviar_mensagem").attr('disabled', true);
+                }
+            }
+
+            $(document).ready(function(){
+                var item = sessionStorage.getItem('mensagensnaolidas');
+           
+                if(!item) {
+                    var newsrc = $(".msg").attr("src").replace("imagens/mensagens.png", "imagens/mensagensnaolidas.png");
+                    $(".msg").attr("src", newsrc);
+                }
+            });
+                
+        </script>
+    </head>
+
+    <body>
+        <div id="keyboardContainer"><div id="virtualKeyboard"></div></div>
+        <div id="header">
+            <div id="logoContainer">
+                <a href="barista.html">
+                    <img id="logo" src="imagens/logosimple.png" />
+                </a>
+            </div>
+            <div id="titleContainer">
+                <span id="title">Conversas</span>
+            </div>
+            <div id="navigation">
+                <div class="navImgContainer">
+                    <a href="conversas.html">
+                        <img class="msg navImg" src="imagens/mensagens.png" />
+                    </a>
+                </div>
+                <div class="navImgContainer">
+                    <a href="pagamentos.html">
+                        <img class="navImg" src="imagens/pagamentos.png" />
+                    </a>
+                    <div id="total_pagamento"></div>
+                </div> 
+                <div class="navImgContainer">
+                    <a onclick="toggleHelp()">
+                        <img class="navImg" src="imagens/ajuda.png" />
+                    </a>
+                </div>  
+            </div>
+        </div>
+        <div id="content">
+                <div id="keyboardContainer"><div id="virtualKeyboard"></div></div>
+                <nav class ="ink-navigation" id = "lista_conversas">
+                    <ul id="submenu" class="menu horizontal blue">
+                        <li id="disponibilidade">
+                            <a onclick="javascript:toggleDisponibilidade()">On</a>
+                        </li>
+                        <li id="botao_adiciona">
+                            <a onclick="javascript:triggerAdicionar()">+</a>
+                        </li>
+                    </ul>
+                 </nav>
+
+                <div id = "caixa_texto1" class="caixa_texto"> 
+                    <p class="chatMsg"></p>
+                </div>
+                <div id = "caixa_texto2" class="caixa_texto"> 
+                   <p class="chatMsg"> 
+                       <b id = "mesa"> Mesa 2</b> 
+                       <t class = "date"> </t>
+                       <br /> Olá tudo bem? <br /><br /> 
+                    </p>
+                </div>
+                <div id = "caixa_texto3" class="caixa_texto"> 
+                    <p class="chatMsg"> 
+                       <b id = "mesa"> Mesa 3</b> 
+                       <t class = "date"> </t>
+                       <br /> Há quanto tempo não te via por aqui! <br /><br /> 
+                    </p>                
+                </div>
+                <div id = "caixa_texto4" class="caixa_texto"> 
+                    <p class="chatMsg">
+                    </p>
+                </div>
+                <div id = "caixa_texto5" class="caixa_texto"> 
+                    <p class="chatMsg">
+                    </p>
+                </div>
+                <div id = "caixa_texto6" class="caixa_texto"> 
+                    <p class="chatMsg">
+                    </p>
+                </div>
+                 <div id = "caixa_texto7" class="caixa_texto">
+                    <p class="chatMsg">
+                    </p> 
+                </div>
+
+                <form id = "textBox" class="ink-form" method="post" > 
+                    <fieldset>
+                    <div class="control-group">
+                        <div class="column-group gutters"  style="margin: 0px; padding: 0px;">
+                            <div class="control append-button">
+                                <span><input type="text" id="message"  placeholder="Insira o texto" onfocus="jsKeyboard.focus(this)" /></span>
+                                <button style="margin-left: 14px; height: 35px;" onclick="return false" class="ink-button" id="enviar_mensagem">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+                    </fieldset>
+                </form>
+        </div>
+        <div id="flutuantes">
+            <div id="voltar">
+                <a onclick="voltar()">
+                    <img id ="voltarImg" src="imagens/voltar.png">
+                </a>
+            </div>
+
+            <div id="ajudas">
+                <div class="help" id="help1">&uarr; 1. Seleccione ou adicione uma conversa</div>
+                <div class="help" id="help2">&uarr; 2. Escreva a sua mensagem</div>
+                <div class="help" id="help3">&larr; 3. Envie a mensagem</div>
+            </div>
+
+            <div class="ink-shade fade">
+                <div class="ink-modal" data-trigger="#dummy2" data-width="1000px" data-height="700px">
+                    <div class="modal-header">
+                        <a onclick="toggleHelpMesas()">
+                            <img id="ajuda_mesas" src="imagens/ajuda.png">
+                        </a>
+                        <h2>Escolha uma mesa para conversa</h2>
+                        </div>
+                        <div class="modal-body">
+                            <div id="ajudasPop">
+                                <div class="help" id="ajudaPop1">&darr; Escolha uma das mesas disponíveis e clique em confirmar</div>
+                                <div class="help" id="ajudaPop2">&uarr; Você encontra-se aqui</div>
+                            </div>
+                        
+                        <div id="bar"> <span id="textoBar">Bar</span></div> 
+                        <div id="mesa1" class="mapa_mesa btn btn-lg btn-default" onclick="escolhermesa(1)"> MESA 1
+                            <p class="disponivel"><br>Disponível</p>
+                        </div>
+                        <div id="mesa2" class="mapa_mesa btn btn-lg btn-default" onclick="escolhermesa(2)"> MESA 2
+                            <p class="disponivel"><br>Disponível</p>
+                        </div>
+                        <div id="mesa3" class="mapa_mesa btn btn-lg btn-default" onclick="escolhermesa(3)"> MESA 3
+                            <p class="disponivel"><br>Disponível</p>
+                        </div>
+                        <div id="mesa4" disabled="true" class="mapa_mesa btn btn-lg btn-default"> MESA 4
+                            <p class="nao_disponivel"><br> Não Disponível</p>
+                        </div>
+                        <div id="mesa5" disabled="true" class="mapa_mesa btn btn-lg btn-default"> MESA 5
+                            <img id="location" src="imagens/location.png"></img>
+                        </div>
+                        <div id="mesa6" class="mapa_mesa btn btn-lg btn-default" onclick="escolhermesa(6)"> MESA 6
+                            <p class="disponivel"><br>Disponível</p>
+                        </div>
+                        <div id="porta"><span id="textoPorta">Saída</span></div>
+                    </div>
+                    <div class="modal-footer">
+
+                        <div class="center">
+                            <div class="ink-dismiss pop_bot_left" onclick="javascript:cancelarMesas()">Cancelar</div>
+                            <div class="ink-dismiss pop_bot_right" id="botao_conf_popup" onclick="adicionaConversa(mesa_escolhida); poeHighlighted(mesa_escolhida)">Confirmar</div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $(".help").hide();  
+            });
+            var help = false; 
+            function toggleHelp() {
+                help = !help;
+                if(help)
+                    $(".help").show();
+                else $(".help").hide();
+            }
+        </script>
+
+        <script type="text/javascript">
+            $(document).ready(function(){
+                jsKeyboard.init("virtualKeyboard");
+            });
+                
+        </script>
+
+        <script>
+            var mesa_escolhida = 0;
+            var li_mesa = null;
+
+            $(document).on('click', "#submenu .lista_mesa", function(){
+                $("#submenu").find('li').removeClass('active');
+                $(this).addClass('active');
+                var item = sessionStorage.getItem('mensagensnaolidas');
+                var notify = sessionStorage.getItem('notificacao');
+                if ($(this).hasClass('unread')) {
+                    $(this).removeClass('unread');
+                    sessionStorage.setItem('notify', 1); 
+                    var newsrc = $(".msg").attr("src").replace("imagens/mensagensnaolidas.png", "imagens/mensagens.png");
+                    $(".msg").attr("src", newsrc);
+                    item = true;
+                    sessionStorage.setItem('mensagensnaolidas', item);
+                }
+            });
+
+            $(document).on('click', '.lista_mesa', function(){
+                $('#' + caixa_texto).hide();
+                if (this.innerHTML.indexOf('MESA 1') >= 0) {
+                    caixa_texto = "caixa_texto1";
+                } else if (this.innerHTML.indexOf('MESA 2') >= 0){
+                    caixa_texto = "caixa_texto2";
+
+                } else if(this.innerHTML.indexOf('MESA 3') >= 0){
+                    caixa_texto = "caixa_texto3";
+                
+                } else if(this.innerHTML.indexOf('MESA 4') >= 0){
+                    caixa_texto = "caixa_texto4";
+
+                } else if(this.innerHTML.indexOf('MESA 5') >= 0){
+                    caixa_texto = "caixa_texto5";
+
+                } else if(this.innerHTML.indexOf('MESA 6') >= 0){
+                    caixa_texto = "caixa_texto6";
+                } else{
+                    caixa_texto = "caixa_texto7";
+                }
+
+                $("#message").attr('disabled', false);
+                $("#enviar_mensagem").attr('disabled', false);
+
+                $('#' + caixa_texto).show();
+            });
+
+
+            $(document).on('click', '.glyphicon-trash', function() {
+                li_mesa = $(this).closest('li');
+                 $('#dummy').click();
+
+            });
+
+            function triggerAdicionar() {
+                $("#dummy2").click();
+                $(".help").hide();
+                jsKeyboard.hide();
+            }
+
+            function removeConversa(string){
+                if (string.html().indexOf('MESA 1') >= 0) {
+                    $('#caixa_texto1').hide();
+                    if(caixa_texto.indexOf("1") >= 0){
+                        caixa_texto = "caixa_texto7";
+                        $('#' + caixa_texto).show();
+
+                    }
+                    $('#mesa1').attr('disabled', false);
+
+                } else if (string.html().indexOf('MESA 2') >= 0) {
+                    $('#caixa_texto2').hide();
+                    if(caixa_texto.indexOf("2") >= 0){
+                        caixa_texto = "caixa_texto7";
+                        $('#' + caixa_texto).show();
+
+                    }
+                    $('#mesa2').attr('disabled', false);
+
+                } else if (string.html().indexOf('MESA 3') >= 0) {
+                    $('#caixa_texto3').hide();
+                    if(caixa_texto.indexOf("3") >= 0){
+                        caixa_texto = "caixa_texto7";
+                        $('#' + caixa_texto).show();
+                    }
+                    $('#mesa3').attr('disabled', false);
+
+                } else if (string.html().indexOf('MESA 4') >= 0) {
+                    $('#caixa_texto4').hide();
+                    if(caixa_texto.indexOf("4") >= 0){
+                        caixa_texto = "caixa_texto7";
+                        $('#' + caixa_texto).show();
+                    }
+                    $('#mesa4').attr('disabled', false);
+
+                } else if (string.html().indexOf('MESA 5') >= 0) {
+                    $('#caixa_texto5').hide();
+                    if(caixa_texto.indexOf("5") >= 0){
+                        caixa_texto = "caixa_texto7";
+                        $('#' + caixa_texto).show();
+                    }
+                    $('#mesa5').attr('disabled', false);
+
+                } else if (string.html().indexOf('MESA 6') >= 0) {
+                    $('#caixa_texto6').hide();
+                    if(caixa_texto.indexOf("6") >= 0){
+                        caixa_texto = "caixa_texto7";
+                        $('#' + caixa_texto).show();
+                    }
+                    $('#mesa6').attr('disabled', false);
+                }
+
+                $("#message").attr('disabled', true);
+                $("#enviar_mensagem").attr('disabled', true);
+                string.remove();
+                return false;
+            }           
+
+            
+            function adicionaConversa(mesa){
+                var table=document.getElementById("submenu");
+                var notify = sessionStorage.getItem('notify');
+
+                $('#botao_conf_popup').hide();
+
+                if(mesa == 'MESA 1') {
+                    table.innerHTML += "<li id='tabMesa1' class='active lista_mesa'><a>" + mesa + 
+                    "<span id = 'trash' class='glyphicon glyphicon-trash'></span></a></li>";
+                    document.getElementById('mesa1').className =
+                        document.getElementById('mesa1').className.replace('active','');
+                    //document.getElementById('botao_conf_popup').disabled = true;
+                    document.getElementById('mesa1').setAttribute("disabled", true);
+                    $("#tabMesa1").click();
+                }
+                else if(mesa == 'MESA 2') {
+                    if(notify==1) {
+                        table.innerHTML += "<li id='tabMesa2' class='lista_mesa'><a>" + mesa + 
+                        "<span id = 'trash' class='glyphicon glyphicon-trash'></span></a></li>";
+                    } else {
+                        table.innerHTML += "<li id='tabMesa2' class='lista_mesa unread'><a>" + mesa + 
+                        "<span id = 'trash' class='glyphicon glyphicon-trash'></span></a></li>";
+                    }
+                    document.getElementById('mesa2').className =
+                        document.getElementById('mesa2').className.replace('active','');
+                    //document.getElementById('botao_conf_popup').disabled = true;
+                    document.getElementById('mesa2').setAttribute("disabled", true);
+                    if(notify == 1)
+                        $("#tabMesa2").click();
+                }
+                else if(mesa == 'MESA 3') {
+                    table.innerHTML += "<li id='tabMesa3' class='lista_mesa'><a>" + mesa + 
+                    "<span id = 'trash' class='glyphicon glyphicon-trash'></span></a></li>";
+                    document.getElementById('mesa3').className =
+                        document.getElementById('mesa3').className.replace('active','');
+                    //document.getElementById('botao_conf_popup').disabled = true;
+                    document.getElementById('mesa3').setAttribute("disabled", true);
+                    $("#tabMesa3").click();
+                } 
+                else if(mesa == 'MESA 6') {
+                    table.innerHTML += "<li id='tabMesa6' class='lista_mesa'><a>" + mesa + 
+                    "<span id = 'trash' class='glyphicon glyphicon-trash'></span></a></li>";
+                    document.getElementById('mesa6').className =
+                        document.getElementById('mesa6').className.replace('active','');
+                    //document.getElementById('botao_conf_popup').disabled = true;
+                    document.getElementById('mesa6').setAttribute("disabled", true);
+                    $("#tabMesa6").click();
+                }
+
+                $("#message").attr('disabled', false);
+                $("#enviar_mensagem").attr('disabled', false);
+
+            }  
+          
+            function escolhermesa(nr_mesa){
+                var numeromesa = 'mesa' + nr_mesa;
+                if(document.getElementById(numeromesa).className.indexOf("active") >= 0){
+                    document.getElementById(numeromesa).className =
+                        document.getElementById(numeromesa).className.replace('active','');
+                    mesa_escolhida = 0;    
+                    $('#botao_conf_popup').hide();
+                    //document.getElementById('botao_conf_popup').disabled = true;
+                    $('#caixa_texto' + nr_mesa).hide();
+                    caixa_texto = "caixa_texto1";
+                    $('#caixa_texto1').show();
+
+                } else {
+                    var variavel = 0;
+                    $(".modal-body").find("div").each(function(){
+                        if ($(this).attr("class") != null) {
+                           var result = $(this).attr("class").split(' ');
+                           if(jQuery.inArray( "active", result) > -1) {
+                            variavel = 1; 
+                           }
+                        };
+                    });
+                    if(variavel == 0) {
+                        $('#botao_conf_popup').show();
+                        //document.getElementById('botao_conf_popup').disabled = false;
+                        document.getElementById(numeromesa).className += " active"; 
+                        mesa_escolhida = "MESA " + nr_mesa;
+                        $('#' + caixa_texto).hide();
+                        caixa_texto = "caixa_texto" + nr_mesa;
+                        $('#caixa_texto' + nr_mesa).show();
+                    }
+                }
+            }
+
+            function poeHighlighted(mesa_escolhida){
+                var s = mesa_escolhida.split(" ");
+                var numero = s[1];
+                $("#submenu").find('li').removeClass('active');
+                $("#tabMesa" + numero).addClass('active');
+            }
+
+        </script>
+
+        <script>
+            var caixa_texto = "caixa_texto7";
+            function generateTimeString(hours, minutes) {
+                var time = "";
+                if(hours < 10)
+                    time += "0";
+                time += hours + ":";
+                if(minutes < 10)
+                    time += "0";
+                time += minutes;
+
+                return time;        
+            }
+
+            $(document).ready(function() {
+                //adicionaConversa('MESA 1');
+                adicionaConversa('MESA 2');
+                adicionaConversa('MESA 3');
+                //adicionaConversa('MESA 3');
+                //$('#mesa1').attr('disabled', true);
+                $('#mesa2').attr('disabled', true);
+                //$('#mesa3').attr('disabled', true);
+
+                function generateTimeString(hours, minutes) {
+                    var time = "";
+                    if(hours < 10)
+                        time += "0";
+                    time += hours + ":";
+                    if(minutes < 10)
+                        time += "0";
+                    time += minutes;
+
+                    return time;        
+                }
+
+                $('.ink-button').click(function(){
+                    var minha_mesa = 'Minha mesa';
+                    var texto = document.getElementById(caixa_texto);
+                    var message = document.getElementById('message').value;
+                    var data =  new Date();
+                    var tempo = data.getHours() + 'h' + data.getMinutes();
+                    if(message == '') {
+                        texto.innerHTML = texto.innerHTML;
+                    } else{
+                        $("#" + caixa_texto).find('p').append('<b id = "mesa">' + minha_mesa +'</b>' + '<t class = "date">' + generateTimeString(data.getHours(), data.getMinutes()) + '</t>') ;
+                        $("#" + caixa_texto).find('p').append('<br />' +  message + '<br /><br />');
+                        document.getElementById('message').value = "";
+                        texto.scrollTop = texto.scrollHeight;
+                        setTimeout(function(){
+                            reply(caixa_texto);
+                        }, 2000);
+                    } 
+                });
+            });
+
+            function reply(mesa){
+                var texto = document.getElementById(mesa);
+                var data =  new Date();
+                var id = "Mesa " + ("" + mesa).substr(mesa.length - 1);
+                $("#" + mesa).find('p').append('<b id = "mesa">' + id +'</b>' + '<t class = "date">' + generateTimeString(data.getHours(), data.getMinutes()) + '</t>') ;
+                $("#" + mesa).find('p').append('<br />Olá!<br /><br />');
+                texto.scrollTop = texto.scrollHeight;
+            }
+
+        </script>
+
+            <div id="dummy"></div>
+            <div id="dummy2"></div>
+
+            <div  id="popup_confirm" class="ink-shade fade">
+                <div class="ink-modal"  data-trigger="#dummy" data-width="400px" data-height="200px">
+                    <div class="modal-body">
+                        <p><p><p><center> Deseja eliminar a conversa? </center></p></p></p>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="center">
+                            <div class="ink-dismiss pop_bot_left" > Não </div>
+                            <div id="yes"class="ink-dismiss pop_bot_right" onClick = "removeConversa(li_mesa)"> Sim </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

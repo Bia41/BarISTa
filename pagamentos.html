@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Barista</title>
+
+        <link rel="stylesheet" href="css/jsKeyboard.css" type="text/css" media="screen"/>
+        <link href="css/barista.css" rel="stylesheet" type="text/css">
+        <link href="css/pagamentos.css" rel="stylesheet" type="text/css">
+
+        <script src="jquery.js"></script>
+        <script type="text/javascript" src="ink-2.2.1/js/ink.min.js"></script>
+        <script type="text/javascript" src="ink-2.2.1/js/ink.formvalidator.js"></script>
+        <script type="text/javascript" src="jsKeyboard.js"></script>
+        <script type="text/javascript" src="ink-2.2.1/js/ink-ui.min.js"></script>
+        <script type="text/javascript" src="ink-2.2.1/js/ink.modal.js"></script>
+        <script type="text/javascript" src="ink-2.2.1/js/autoload.js"></script>  
+
+        <script type="text/javascript">
+            // AJUDA
+
+            $("document").ready(function() {
+                $(".help").hide();  
+            });
+             
+            function toggleHelp() {        
+                $(".help").toggle();
+            }
+
+            $("document").ready(function(){
+                var item = sessionStorage.getItem('mensagensnaolidas');
+                if(!item) {
+                    var newsrc = $(".msg").attr("src").replace("imagens/mensagens.png", "imagens/mensagensnaolidas.png");
+                    $(".msg").attr("src", newsrc);
+                }
+            });
+        </script>
+
+        <script type="text/javascript">
+            //VOLTAR
+            function voltar() {
+                window.history.back();
+            }
+        </script>
+
+        <script type="text/javascript">
+          $("document").ready(function() {
+            var total = sessionStorage.getItem('totalPagamento');
+
+            if(total <= 0){
+              esconderBotoes();
+            }
+            else mostrarBotoes();
+          });
+
+        function esconderBotoes(){
+          $('#botao_dinheiro').hide();
+          $('#botao_mb').hide();
+          $('#botao_paypal').hide();
+        }
+
+        function mostrarBotoes(){
+          $('#botao_dinheiro').show();
+          $('#botao_mb').show();
+          $('#botao_paypal').show();
+        }
+
+        $("document").ready(function() {
+          var contadorItems = sessionStorage.getItem('contadorItems');
+
+          
+          if(contadorItems > 0) {
+            for (var i = 1; i  <= contadorItems; i++) {
+
+
+              var nomeTempVar = "nome" + i;
+              var qtdTempVar = "qtd" + i;
+              var precoTempVar = "preco" + i;
+           
+
+              html = "<tr><td>" + sessionStorage.getItem(nomeTempVar) + "</td><td>"
+              + sessionStorage.getItem(qtdTempVar) + "</td><td>" + sessionStorage.getItem(precoTempVar) + "</td></tr>";
+
+              $('#lista_produtos tbody').append(html);
+            };
+          }
+
+          var total = sessionStorage.getItem('totalPagamento');
+          $('#total').text("Total: " + total + "€");
+        });
+        </script>
+
+    </head>
+
+    <body>
+        <div id="header">
+            <div id="logoContainer">
+                <a href="barista.html">
+                    <img id="logo" src="imagens/logosimple.png" />
+                </a>
+            </div>
+            <div id="titleContainer">
+                <span id="title">Pagamentos</span>
+            </div>
+            <div id="navigation">
+                <div class="navImgContainer">
+                    <a href="conversas.html">
+                        <img class="msg navImg" src="imagens/mensagens.png" />
+                    </a>
+                </div>
+                <div class="navImgContainer">
+                    <a href="pagamentos.html">
+                        <img class="navImg" src="imagens/pagamentos.png" />
+                    </a>
+                </div> 
+                <div class="navImgContainer">
+                    <a onclick="toggleHelp()">
+                        <img class="navImg" src="imagens/ajuda.png" />
+                    </a>
+                </div>  
+            </div>
+        </div>
+        <div id="content">
+            
+            <div id="lista_produtos_box">
+                
+                <div id="lista_produtos_scroll">
+                    <table id="lista_produtos">
+                        <thead>
+                          <tr>
+                            <th>Pedidos</th>
+                            <th>Quantidade</th>
+                            <th>Preço Total</th>
+                          </tr>
+                        </thead>
+                        
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="total">Total: 1000€</div>
+            
+            </div>
+
+            <div id="paymentContainer">
+                <div id="botao_dinheiro" class="botoes_pagamentos">
+                    <img class="pagamentoImg" src="imagens/dinheiro1.png">
+                </div>
+                <div id="botao_mb" class="botoes_pagamentos">
+                    <img class="pagamentoImg" src="imagens/multibanco.png">
+                </div>
+                <div id="botao_paypal" class="botoes_pagamentos">
+                    <img class="pagamentoImg" src="imagens/paypal.jpeg">
+                </div>
+            </div>
+        </div>
+        <div id="flutuantes">
+            <div id="voltar">
+                <a onclick="voltar()">
+                    <img id ="voltarImg" src="imagens/voltar.png">
+                </a>
+            </div>
+
+            <div id="ajudas">
+                <div class="help" id="help1">1. Verifique a sua conta &rarr;</div>
+                <div class="help" id="help2">&darr; 2. Escolha o método de pagamento</div>
+            </div>
+
+
+                        <!-- POPUP DINHEIRO -->
+
+            <script type="text/javascript">
+                function redirect() {
+                    window.location = "barista.html"
+                    sessionStorage.setItem('contadorItems', 0);
+                }
+
+                function successDinheiro(){
+                    $("#texto_pop_dinheiro").text("Pagamento efectuado com sucesso! Volte sempre!");
+                    setTimeout('redirect()', 3000);
+                }
+
+                function pay() {
+                    $("#total_pop_dinheiro").text("0");
+                    setTimeout('successDinheiro()', 1000);
+                }
+
+                 $("document").ready(function() {
+                    var total = sessionStorage.getItem('totalPagamento');
+                    $('#total_pop_dinheiro').text(total);
+                  });
+
+              
+                  var timeout;
+                
+                  $('#botao_dinheiro').click(function (){
+                    $(".help").hide();
+                    var total = sessionStorage.getItem('totalPagamento');
+                    if(total > 0){
+                      timeout = setTimeout('pay()', 3000);
+                    }
+                     
+                 });
+  
+                 function assassinaTimeOut() {
+                    clearTimeout(timeout);
+                 }
+
+            </script>
+        
+            <div id="botao_dinheiro"></div>
+           
+            <div  id="popup_dinheiro" class="ink-shade fade">
+              <div class="ink-modal"  data-trigger="#botao_dinheiro" data-width="450px" data-height="300px">
+                <div class="modal-header">
+                  <h2>Pagamento com dinheiro<span id="titulo_pers"></span></h2>
+                </div>
+                <div class="modal-body">
+                  <div id="texto_pop_dinheiro"
+                      <p>Insira moedas e notas na ranhura. </p>
+                    <p> Em falta: <span id="total_pop_dinheiro"> 1000 </span> &euro;</p>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <div class="center">
+                    <div onClick="assassinaTimeOut()" class="ink-dismiss pop_bot_left">Cancelar</div>
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <!-- POP UP PAYPAL -->
+
+            <script type="text/javascript">
+            function redirect() {
+                window.location = "barista.html"
+                sessionStorage.setItem('contadorItems', 0);
+            }
+
+            function success(){
+                
+                jsKeyboard.hide();
+                $('#content_pop_paypal').text("Pagamento efectuado com sucesso! Volte sempre!");
+                setTimeout('redirect()', 3000);
+            }
+
+            function validate(form) {
+                
+                return Ink.UI.FormValidator_1.validate(form);
+            }
+
+            $("document").ready(function(){
+                $(".help").hide();
+                jsKeyboard.init("virtualKeyboard");
+
+                 Ink.UI.FormValidator_1._flagMap = {
+                    'ink-fv-required': {msg: 'Campo obrigat&oacute;rio'},
+                    //'ink-fv-required': {msg: 'Required field'},
+                    'ink-fv-email': {msg: 'E-mail inv&aacute;lido'},
+                    //'ink-fv-email': {msg: 'Invalid e-mail address'},
+                    //'ink-fv-url': {msg: 'URL inv&aacute;lido'},
+                    'ink-fv-url': {msg: 'Invalid URL'},
+                    //'ink-fv-number': {msg: 'N&uacute;mero inv&aacute;lido'},
+                    'ink-fv-number': {msg: 'Invalid number'},
+                    //'ink-fv-phone_pt': {msg: 'N&uacute;mero de telefone inv&aacute;lido'},
+                    'ink-fv-phone_pt': {msg: 'Invalid phone number'},
+                    //'ink-fv-phone_cv': {msg: 'N&uacute;mero de telefone inv&aacute;lido'},
+                    'ink-fv-phone_cv': {msg: 'Invalid phone number'},
+                    //'ink-fv-phone_mz': {msg: 'N&uacute;mero de telefone inv&aacute;lido'},
+                    'ink-fv-phone_mz': {msg: 'Invalid phone number'},
+                    //'ink-fv-phone_ao': {msg: 'N&uacute;mero de telefone inv&aacute;lido'},
+                    'ink-fv-phone_ao': {msg: 'Invalid phone number'},
+                    //'ink-fv-date': {msg: 'Data inv&aacute;lida'},
+                    'ink-fv-date': {msg: 'Invalid date'},
+                    //'ink-fv-confirm': {msg: 'Confirma&ccedil;&atilde;o inv&aacute;lida'},
+                    'ink-fv-confirm': {msg: 'Confirmation does not match'},
+                    'ink-fv-custom': {msg: ''}
+                };
+            });
+
+            $("document").ready(function() {
+                var total = sessionStorage.getItem('totalPagamento');
+                total += " €";
+                $('#total_pop_paypal').text(total);
+
+                $('#botao_confirmar_paypal').hide();
+             });
+
+            function limpaForm(){
+              $('#inputMail').val("");
+              $('#inputPass').val("");
+            }
+
+            function clicaConfirmar(){
+
+                $('#botao_confirmar_paypal').click();
+            }
+            
+            $('#botao_paypal').click(function (){
+              $(".help").hide();
+              var total = sessionStorage.getItem('totalPagamento');  
+            });
+ 
+            
+        </script>
+
+
+            <div id="botao_paypal"></div>
+        
+            <div  id="popup_paypal" class="ink-shade fade">
+              <div class="ink-modal"  data-trigger="#botao_paypal" data-width="600px" data-height="450px">
+                <div class="modal-header">
+                  <h2>Pagamento com Paypal<span id="titulo_pers"></span></h2>
+                </div>
+                <div class="modal-body">
+                  
+                  <div id="content_pop_paypal"> 
+                      <div id="total_paypal">Total:</div>
+                      <div id="total_pop_paypal"></div>
+                      <form id="paypal_form" class="ink-form" method="post" action="javascript:success()" onsubmit="return Ink.UI.FormValidator_1.validate(this);">
+                          <fieldset>
+                              <div class="control-group required">
+                                  <label for="mail">Email:</label>
+                                  <div class="control">
+                                      <input id="inputMail" type="text" name="mail" id="mail" class="ink-fv-required ink-fv-email" onfocus="jsKeyboard.focus(this)"/>
+                                  </div>
+                              </div>
+                      
+                              <div class="control-group required">
+                                  <label for="pass">Password: </label>
+                                  <div class="control">
+                                      <input id="inputPass" type="password" name="pass" id="pass" class="ink-fv-required ink-fv-confirm" onfocus="jsKeyboard.focus(this)"/>
+                                  </div>
+                              </div>
+                              <p class="tip"> * Campo obrigat&oacute;rio </p>
+                          </fieldset>
+                          <div>
+                              <input id="botao_confirmar_paypal" type="submit" value="Confirmar" class="ink-button success pop_bot_right">
+                          </div> 
+                      </form>
+                  </div>
+
+                </div>
+                
+                <div class="modal-footer">
+                  <div class="center">
+                    <div onClick="limpaForm()" class="ink-dismiss pop_bot_left">Cancelar</div>
+                    <div onClick="clicaConfirmar()" class="pop_bot_right">Confirmar</div>
+                  </div>
+                </div>
+              </div>
+              <div id="virtualKeyboard"></div>
+            </div>
+
+
+            <!-- pop-up mb -->
+
+            <script type="text/javascript">
+               $("document").ready(function() {
+                  var total = sessionStorage.getItem('totalPagamento');
+                  $('#total_pop_mb').text(total);
+                  $('.key_mb').click(function() {
+                    var mostrador = document.getElementById('mostrador');
+                    if(mostrador.innerHTML.length < 4) {
+                      mostrador.innerHTML = mostrador.innerHTML + '*';
+                    } else {
+                      mostrador.innerHTML = mostrador.innerHTML + '';}
+                    event.stopPropagation();
+                  });
+
+                   $('.btn').click(function() {
+                    var mostrador = document.getElementById('mostrador');
+                    if (this.innerHTML == ' Anular ') {
+                      cancelaMB();
+                    } else if (this.innerHTML == ' Corrigir ') {
+                      document.getElementById('mostrador').innerHTML = '';
+                      // mostrador.innerHTML = mostrador.innerHTML.substring(0, mostrador.innerHTML.length - 1);
+                    } else if (this.innerHTML == ' Confirmar ' && mostrador.innerHTML.length == 4) {
+                      document.getElementById('mostrador').innerHTML = '';
+                      $('#lindo').click();
+                    }
+                  });  
+                   $('#caixa-MB').hide();
+                });
+
+              function simular(){
+                $('#mbWarning').hide();
+                $('#caixa-MB').show();
+              }
+
+              function saiSubMenu() {
+                window.location = "barista.html"
+                sessionStorage.setItem('contadorItems', 0);
+              }
+
+              function resetMB(){
+                $('#mostrador').text("");
+                $('#mbWarning').show();
+                $('#caixa-MB').hide();
+              }
+
+              function cancelaMB(){
+                setTimeout("resetMB()", 1000);
+              }
+              
+              $('#botao_mb').click(function (){
+                $(".help").hide();
+                var total = sessionStorage.getItem('totalPagamento');  
+              });
+            </script>
+
+            <div id="botao_mb"></div>
+            
+            <div  id="popup_mb" class="ink-shade fade">
+              <div class="ink-modal"  data-trigger="#botao_mb" data-width="1000px" data-height="700px">
+                <div class="modal-header">
+                  <h2>Pagamento com Multibanco<span id="titulo_pers"></span></h2>
+                </div>
+                <div class="modal-body">
+                    <div id="mbInfoContainer">
+                        <div id="mbSteps">
+                            <ol>
+                                <li> Introduza o cart&atilde;o na ranhura</li>
+                                <li> Insira o pin</li>
+                                <li> Confirme a opera&ccedil;&atilde;o</li>
+                            </ol>
+                        </div>
+                        <div id="mbTotalContainer">
+                            Total: <span id="total_pop_mb"></span>&euro;
+                        </div>     
+                    </div>
+                    <div id="mbWarning">
+                        <div id="warnImgContainer">
+                            <img id="atencaoImg" src="imagens/atencao.png" />
+                        </div>
+                        <div id="warnContainer">
+                            Pode estar a ser observado! Cubra o ecrã com uma mão<br/>
+                            <center><div id="mbSimular" onclick="simular()">Simular</div></center>
+                        </div>
+                    </div>
+                    <div id="caixa-MB">
+                        <div id="mostrador"></div>
+                            <table id="teclado_mb"> 
+                                <tr>
+                                  <td class="key_mb"> 1 </td>
+                                  <td class="key_mb"> 2 </td>
+                                  <td class="key_mb"> 3 </td>
+                                  <td id="anular" class="btn ink-dismiss"> Anular </td>
+                                </tr>
+                                <tr>
+                                  <td class="key_mb"> 4 </td>
+                                  <td class="key_mb"> 5 </td>
+                                  <td class="key_mb"> 6 </td>
+                                  <td id="corrigir" class="btn"> Corrigir </td>
+                                </tr>
+                                <tr>
+                                  <td class="key_mb"> 7 </td>
+                                  <td class="key_mb"> 8 </td>
+                                  <td class="key_mb"> 9 </td>
+                                  <td class="bt"></td>
+                                </tr>
+                                <tr>
+                                  <td class="key_mb"> . </td>
+                                  <td class="key_mb"> 0 </td>
+                                  <td class="key_mb"> 00 </button></td>
+                                  <td id="confirmar" class="btn"> Confirmar </td>
+                                </tr>
+                            </table>        
+                    </div>
+                    <div  id="popup_confirm" class="ink-shade fade">
+                      <div class="ink-modal"  data-trigger="#lindo" data-width="400px" data-height="200px">
+                        <div class="modal-body">
+                            <p><p><p><center> Pagamento efectuado com sucesso </center>
+                        </div>
+                        <div class="modal-footer">
+                          <center>
+                            <div class="ink-dismiss pop_bot_right" onclick="saiSubMenu()"> Ok </div>
+                          </center>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div id="lindo"></div>
+
+                </div>
+                <div class="modal-footer">
+                  <div class="center">
+                    <div onClick="cancelaMB()" class="ink-dismiss pop_bot_left">Cancelar</div>
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    <body>
+</html>

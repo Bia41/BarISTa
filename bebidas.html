@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Barista</title>
+
+        <link rel="stylesheet" type="text/css" href="css/barista.css">
+        <link rel="stylesheet" type="text/css" href="css/bebidas.css">
+
+        <script src="jquery.js"></script>
+        <script type="text/javascript" src="ink-2.2.1/js/ink.min.js"></script>
+        <script type="text/javascript" src="ink-2.2.1/js/ink-ui.min.js"></script>
+        <script type="text/javascript" src="ink-2.2.1/js/ink.modal.js"></script>
+        <script type="text/javascript" src="ink-2.2.1/js/autoload.js"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+
+        <script type="text/javascript">
+            // AJUDA
+
+            $("document").ready(function() {
+                $(".help").hide();
+            });
+
+            function toggleHelp() {        
+                $(".help").toggle();
+            }
+
+            function toggleHelpPers() {
+                $("#ajudaPop1").toggle();  
+                $("#ajudaPop2").toggle();  
+                $("#ajudaPop3").toggle();
+            }
+
+            function cancelaToggleHelp(){
+              $("#ajudaPop1").hide();  
+              $("#ajudaPop2").hide();  
+              $("#ajudaPop3").hide();
+            }
+
+             
+            function activaPopupIngr(){
+              $("#tabela_pedido tbody tr td").click(function(){
+                setUpPopIngr(this);
+                $("#dummy_ingr").click();
+              });
+            }
+
+            function setUpPopIngr(elem){
+              $("#titulo_ingr").html($(elem).children(".nome_no_pedido").html());
+
+              $("#ingr_list_container").html("");
+              $("#ingr_list_container").html($(elem).children(".componentes").html());
+
+              var quantidade = Number($(elem).children(".qtd_no_pedido").text());
+              var preco = parseFloat($(elem).children(".preco_no_pedido").text().slice(0,-1)) / quantidade; //Removes € from string
+
+              $("#preco_unitario").text(preco.toFixed(2) + '€/un');
+              $("#ingr_qtd").text(quantidade);
+              if(quantidade == 1)
+                $("#ingr_menos_qtd").children().css("opacity", "0.3");
+              else $("#ingr_menos_qtd").children().css("opacity", "1.0");
+
+              $("#confirmar_ingr").unbind('click');
+              $("#confirmar_ingr").click(function(){
+                confirmarIngr(elem);
+              });
+            }
+
+            function reduzirQuantidadeIngr(){
+              var quantidade = Number($("#ingr_qtd").text());
+
+              if(quantidade > 1) {
+                quantidade--;
+                $("#ingr_qtd").text(quantidade);
+                if(quantidade == 1)
+                $('#ingr_menos_qtd').children().css("opacity", "0.3");
+              }
+            }
+
+            function aumentarQuantidadeIngr(){
+              var quantidade = Number($("#ingr_qtd").text());
+
+              quantidade++;
+              $("#ingr_qtd").text(quantidade);
+              $('#ingr_menos_qtd').children().css("opacity", "1.0");
+            }
+
+            function confirmarIngr(elem){
+              var quantidade = Number($(elem).children(".qtd_no_pedido").text());
+              var novaQuantidade = Number($("#ingr_qtd").text());
+
+              if(quantidade == novaQuantidade) return;
+
+              var preco = parseFloat($(elem).children(".preco_no_pedido").text().slice(0,-1)) / quantidade; //Removes € from string
+              $(elem).children(".qtd_no_pedido").text(novaQuantidade);
+              $(elem).children(".preco_no_pedido").text((novaQuantidade * preco).toFixed(2) + '€');
+            }
+
+            $("document").ready(function(){
+                var item = sessionStorage.getItem('mensagensnaolidas');
+                if(!item) {
+                    var newsrc = $(".msg").attr("src").replace("imagens/mensagens.png", "imagens/mensagensnaolidas.png");
+                    $(".msg").attr("src", newsrc);
+                }
+            });
+        </script>
+
+        <script type="text/javascript">
+
+        var precos = {
+          "Vodka":0.85,
+          "Água":0.20,
+          "Sumo de Limão":0.35,
+          "Gin":0.90,
+          "Coca-Cola":0.55,
+          "Whiskey":0.95,
+          "Red Bull":0.60,
+          "Tequila":0.85,
+          "Cerveja":0.60,
+          "Absinto":0.85
+        };
+
+        var bebidas = {
+          "Água": {
+            "Água": 1
+          },
+          "Coca-Cola": {
+            "Coca-Cola": 1
+          },
+          "Red Bull": {
+            "Red Bull": 1
+          },
+          "Sumo de Limão": {
+            "Sumo de Limão": 1
+          },
+          "Absinto": {
+            "Absinto": 1
+          },
+          "Tequila": {
+            "Tequila": 1
+          },
+          "Vodka": {
+            "Vodka": 1
+          },
+          "Whiskey": {
+            "Whiskey": 1
+          },
+          "Corona": {
+            "Cerveja": 1
+          },
+          "Desperados": {
+            "Cerveja": 1
+          },
+          "Heineken": {
+            "Cerveja": 1
+          },
+          "Sagres": {
+            "Cerveja": 1
+          },
+          "Super Bock": {
+            "Cerveja": 1
+          },
+          "Barista": {
+            "Vodka": 1,
+            "Red Bull":1
+          },
+          "Bloody Mary": {
+            "Vodka": 1,
+            "Sumo de Limão": 1,
+            "Coca-Cola": 1
+          },
+          "Caipiroska": {
+            "Vodka": 1,
+            "Sumo de Limão": 1
+          },
+          "Cuba Libre": {
+            "Whiskey": 1,
+            "Sumo de Limão": 1,
+            "Coca-Cola": 1
+          },
+          "Margarita": {
+            "Tequila": 1,
+            "Sumo de Limão": 1
+          },
+          "Mojito": {
+            "Whiskey": 1,
+            "Sumo de Limão": 1,          
+          },
+          "Sex On The Beach": {
+            "Vodka": 1,
+            "Sumo de Limão": 1
+          }
+        };
+
+        var coresBebidas = {
+          "Vodka":"silver",
+          "Água":"skyblue",
+          "Sumo de Limão":"yellow",
+          "Gin":"navy",
+          "Coca-Cola":"darkred",
+          "Whiskey":"goldenrod",
+          "Red Bull":"rosybrown",
+          "Tequila":"khaki",
+          "Cerveja":"gold",
+          "Absinto":"lightgreen"
+        }
+
+        var bebidaActual = null;
+
+        var doses = 0;
+
+        var quantidade = 1;
+
+        var canvas;
+
+        var canvasContext;
+
+        function clone(obj) {
+          if (null == obj || "object" != typeof obj) return obj;
+          var copy = obj.constructor();
+          for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+          }
+          return copy;
+        }
+
+        function adicionaBebida(bebida){
+          if(doses == 5)
+            return;
+          if(bebidaActual[bebida] == null){
+            bebidaActual[bebida] = 1;
+            adicionarComponente(bebida, bebidaActual[bebida], precos[bebida]); 
+          }
+          else {
+            bebidaActual[bebida]++;
+            doses++;
+            $('.item_pers').each(function(){
+              if($(this).text() == bebida){
+                $(this).siblings('.qtd_pers').text(bebidaActual[bebida]);
+              }
+            });
+          }
+          calculaTotalPers();
+          fillCup();
+          podeConfirmar();
+          verificarDoses();
+        }
+        
+        function personalizar(nome) {
+          $('.help').hide();
+          clearTable();
+          $('#titulo_pers').text(nome);
+          $('#titulo_pers2').text(nome);
+          $('#pers_menos_qtd').children().css("opacity", "0.3");
+          $('#confirmar_pers').unbind("click");
+          $('#confirmar_pers').click(function() {
+            confirmar(nome);
+          });
+          canvas = $("#copoCanvas")[0];
+          canvasContext = canvas.getContext("2d");
+          setCupArea();
+          bebidaActual = clone(bebidas[nome]);
+          drawTable();
+          fillCup();
+          quantidade = 1;
+          $("#pers_qtd").text(quantidade);
+          calculaTotalPers();
+          podeConfirmar();
+          verificarDoses();
+        }
+
+        function drawTable(){
+          for(componente in bebidaActual){
+            adicionarComponente(componente, bebidaActual[componente], precos[componente]);
+          }
+        }
+
+        function clearTable(){
+          $("#tabela_pers tbody").empty();
+          doses = 0;
+          bebidaActual = null;
+        }
+
+        function adicionarComponente(componente, quantidade, preco){
+            $("#tabela_pers tbody").append('<tr><td><section class="botao_apagar_pers" onclick="javascript:removeComponente(this)"> <img class="trash" src="imagens/trashblack.png"/> </section><section class="item_pers">' + componente + '</section><section class="menos_pers" onclick="javascript:reduzirQuantidade(this)"> <img src="imagens/menos.png"/> </section><section class="qtd_pers">' + quantidade + '</section><section class="mais_pers" onclick="javascript:aumentarQuantidade(this)"> <img src="imagens/mais.png" /> </section><section class="preco_pers">' + (preco*quantidade).toFixed(2) + '€ </section></td></tr>');
+            doses += quantidade;
+            verificarDoses();
+        }
+
+        function verificarDoses() {
+          if(doses == 5)
+            $(".mais_pers").children().css("opacity", "0.3");
+          else
+            $(".mais_pers").children().css("opacity", "1.0"); 
+        }
+
+        function aumentarQuantidade(elemento){
+          if(doses == 5)
+            return;
+          var quantidade = $(elemento).siblings('.qtd_pers');
+          quantidade.text(parseInt(quantidade.text()) + 1);
+          var componente = $(elemento).siblings('.item_pers').text();
+          bebidaActual[componente]++;
+          doses++;
+          $(elemento).siblings('.preco_pers').text((bebidaActual[componente] * precos[componente]).toFixed(2) + "€");
+          calculaTotalPers();
+          fillCup();
+          podeConfirmar();
+          verificarDoses();
+        }
+
+        function reduzirQuantidade(elemento){
+          var quantidade = $(elemento).siblings('.qtd_pers');
+          quantidade.text(parseInt(quantidade.text()) - 1);
+          var componente = $(elemento).siblings('.item_pers').text();
+          bebidaActual[componente]--;
+          doses--;
+          if(bebidaActual[componente] == 0){
+            removeComponente(elemento);
+          }
+          else $(elemento).siblings('.preco_pers').text((bebidaActual[componente] * precos[componente]).toFixed(2) + "€");
+          calculaTotalPers();
+          fillCup();
+          podeConfirmar();
+          verificarDoses();
+        }
+
+        function aumentarQuantidadePedidoPersonalizado() {
+          quantidade++;
+          $("#pers_qtd").text(quantidade);
+          $('#pers_menos_qtd').children().css("opacity", "1.0");
+          calculaTotalPers();
+        }
+
+        function reduzirQuantidadePedidoPersonalizado() {
+          if(quantidade > 1) {
+            quantidade--;
+            $("#pers_qtd").text(quantidade);
+            calculaTotalPers();
+            if(quantidade == 1)
+              $('#pers_menos_qtd').children().css("opacity", "0.3");
+          }
+        }
+
+        function removeComponente(elemento){
+          var componente = $(elemento).siblings('.item_pers').text();
+          doses -= bebidaActual[componente];
+          delete bebidaActual[componente];
+          $(elemento).parent().parent().remove();
+          calculaTotalPers();
+          fillCup();
+          podeConfirmar();
+          verificarDoses();
+        }
+
+        function calculaTotalPers(){
+          var total = 0;
+          for(componente in bebidaActual){
+            total += bebidaActual[componente] * precos[componente];
+          }
+          total *= quantidade;
+          $('#total_pers').text(total.toFixed(2) + '€');
+        } 
+
+        var selected = null;
+
+        function confirmar(nome){
+            var total = 0;
+            var compString = "<ul>";
+            for(componente in bebidaActual){
+              total += bebidaActual[componente] * precos[componente];
+              compString += "<li>" + bebidaActual[componente] + " x " + componente + "</li>";
+            }
+            total *= quantidade;
+            compString += "</ul>";
+            var html = "<tr><td><section class=\"botao_apagar_item\"> <img class='trash' src='imagens/trashblack.png'/></span> </section><section class=\"qtd_no_pedido\">" + quantidade + "</section><section class=\"nome_no_pedido\"><span class='personalizado'>* </span>" + nome + "</section><section class=\"preco_no_pedido\">" + total.toFixed(2) + "€</section> <section class='componentes'>" + compString + "</section></td></tr>";
+
+            $('#tabela_pedido tbody').append(html);
+
+            $(".botao_apagar_item").unbind("click");
+
+            $(".botao_apagar_item").on("click", function() {
+                  apagaItem(this);
+              });
+
+            calculaTotal();
+
+            $('.botao_pers').hide();
+            $('.botao_mais').hide();
+            $('.botao_menos').hide();
+            $('.botao_ok').hide();
+            $('.quantidade').hide();
+
+            selected = null;
+
+            activaPopupIngr();
+
+            bebidaActual = null;
+        }
+
+        function podeConfirmar() {
+          if(doses == 0)
+            $("#confirmar_pers").hide();
+          else $("#confirmar_pers").show();
+        }
+
+        function drawCup() {
+                canvasContext.beginPath();
+                canvasContext.moveTo(canvas.width / 3, 0);
+                canvasContext.lineTo(canvas.width*2/3, 0);
+                canvasContext.lineTo(canvas.width*3/5, canvas.height);
+                canvasContext.lineTo(canvas.width*2/5, canvas.height);
+                canvasContext.closePath();
+                canvasContext.lineWidth=5;
+                canvasContext.stroke();
+        }
+
+        function clearCanvas() {
+                canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function setCupArea() {
+                clearCanvas();
+                drawCup();
+                canvasContext.clip();
+        }
+
+        function fillCup() {
+                clearCanvas();
+                var pos = 5;
+                for(componente in bebidaActual){
+                    canvasContext.fillStyle = coresBebidas[componente];
+                    var quantidade = bebidaActual[componente];
+                    pos -= quantidade;
+                    canvasContext.fillRect(0, canvas.height*pos/5, canvas.width, canvas.height*quantidade/5);
+                }
+                drawCup();
+        }
+
+        function apagaItem(elem){
+            $(elem).parent().parent().remove();
+            calculaTotal();
+        }
+
+
+        function calculaTotal(){
+            var total = 0;
+            $('#tabela_pedido tbody tr td .preco_no_pedido').each(function(){
+              total +=  parseFloat($(this).text().slice(0,-1)); //Removes € from string
+            });
+            if(total <= 0){
+              escondeBotoes();
+            }
+            else mostraBotoes();
+
+            $('#valor_total').text(total.toFixed(2) + "€");
+        }
+
+        function escondeBotoes(){
+          $('#botao_limpar').hide();
+          $('#botao_confirmar').hide();
+        }
+
+        function mostraBotoes(){
+          $('#botao_limpar').show();
+          $('#botao_confirmar').show();
+        }
+
+        $("document").ready(function() {
+
+          $('#tabela_lista_bebidas tbody tr td div:first-child').each(function(){
+            var currentHtml = $(this).html();
+            var personalizavel = false;
+            if(bebidas[$(this).text()] != null){
+              personalizavel = true;
+            }
+            $(this).after((personalizavel ? "<div class=\"botao_pers\"><span>Personalizar</span></div>" : "<div class='no_pers'></div>") + "<div class=\"botao_menos\"><img src='imagens/menos.png' /></div><div class=\"quantidade\">1</div><div class=\"botao_mais\"><img src='imagens/mais.png' /></div><div class=\"botao_ok\"><span>OK</span></div>");
+          });
+
+          $('.botao_mais').click(function(e){
+            e.stopPropagation();
+            var qtdChar = $(this).siblings('.quantidade').text();
+            var qtd = parseInt(qtdChar);
+
+
+            $(this).siblings('.quantidade').text(qtd + 1);
+
+            var precoChar = $(this).siblings('.preco').text();
+            var precoCharEsc = precoChar.slice(0, -1); //removes € from string
+            var novoPreco = parseFloat(precoCharEsc) / qtd * (qtd + 1);
+            var precoComSym = novoPreco.toFixed(2) + "€";
+
+            $(this).siblings('.preco').text(precoComSym);
+
+            $(this).siblings('.botao_menos').children().css("opacity", "1.0");
+          });
+
+          $('.botao_menos').click(function(e){
+            e.stopPropagation();
+            var qtdChar = $(this).siblings('.quantidade').text();
+            var qtd = parseInt(qtdChar);
+            if(qtd - 1 != 0) {
+              
+              $(this).siblings('.quantidade').text(qtd - 1);
+
+              var precoChar = $(this).siblings('.preco').text();
+              var precoCharEsc = precoChar.slice(0, -1); //removes € from string
+              var novoPreco = parseFloat(precoCharEsc) / qtd * (qtd - 1);
+              var precoComSym = novoPreco.toFixed(2) + "€";
+
+              $(this).siblings('.preco').text(precoComSym);
+            }
+
+            if(qtd <= 2)
+              $(this).children().css("opacity", "0.3");
+
+          });
+
+          $('.botao_pers').click(function(e){
+            e.stopPropagation();
+            personalizar($(this).siblings(".nome_bebida").text());
+          });
+
+          $('#vinhos, #cocktails, #chasCafes, #cervejas, #bebidasBrancas, #aguasSumos').unbind("click");
+          $('#vinhos, #cocktails, #chasCafes, #cervejas, #bebidasBrancas, #aguasSumos').click(function(e) {
+            e.stopPropagation();
+          })
+
+          function setOriginalPrice(elem){
+
+            var qtdChar = $(elem).siblings('.quantidade').text();
+            var qtd = parseInt(qtdChar);
+
+            $(elem).siblings('.quantidade').text(1);
+
+            var precoChar = $(elem).siblings('.preco').text();
+            var precoCharEsc = precoChar.slice(0, -1); //removes € from string
+            var novoPreco = parseFloat(precoCharEsc) / qtd;
+            var precoComSym = novoPreco.toFixed(2) + "€";
+
+            $(elem).siblings('.preco').text(precoComSym);
+          }
+
+          
+          //FIXME: needs refactor!!!
+          $('#tabela_lista_bebidas tbody tr td').click(function(){
+
+            $(this).children('.botao_pers').toggle();
+            $(this).children('.botao_mais').toggle();
+            $(this).children('.botao_menos').toggle();
+            //$(this).children('.botao_menos').children().hide();
+            $(this).children('.botao_menos').children().css("opacity", "0.3");
+            $(this).children('.botao_ok').toggle();
+            $(this).children('.quantidade').toggle();
+            setOriginalPrice($(this).children('.nome_bebida'));
+
+            if(selected != null && selected.is($(this).children('.nome_bebida'))) {
+              selected = null;
+              return;
+            }
+
+            if(selected != null && !selected.is($(this).children('.nome_bebida'))) {
+              setOriginalPrice(selected);
+              $(selected).siblings('.botao_pers').toggle();
+              $(selected).siblings('.botao_mais').toggle();
+              $(selected).siblings('.botao_menos').toggle();
+              $(selected).siblings('.botao_ok').toggle();
+              $(selected).siblings('.quantidade').toggle();
+            } 
+            selected = $(this).children('.nome_bebida');
+
+
+          });
+
+          $('.botao_ok').click(function(e){
+            e.stopPropagation();
+            var oldQtd = $(this).siblings('.quantidade').text();
+            var oldPrice = $(this).siblings('.preco').text();
+            setOriginalPrice(this); 
+
+            $(this).siblings('.botao_pers').hide();
+            $(this).siblings('.botao_mais').hide();
+            $(this).siblings('.quantidade').hide();
+            $(this).siblings('.botao_menos').hide();
+            $(this).hide();
+
+            selected = null;
+
+            var html = "<tr><td><section class=\"botao_apagar_item\"> <img class='trash' src='imagens/trashblack.png'/> </section><section class=\"qtd_no_pedido\">" + oldQtd + "</section><section class=\"nome_no_pedido\">" + $(this).siblings('.nome_bebida').text() + "</section><section class=\"preco_no_pedido\">" + parseFloat(oldPrice).toFixed(2) + "€</section></td></tr>";
+
+            $('#tabela_pedido tbody').append(html);
+
+            $(".botao_apagar_item" ).on( "click", function() {
+                  apagaItem(this);
+              });
+
+            calculaTotal();
+            activaPopupIngr();
+          });
+
+          $('.botao_apagar_item').click(function(){
+            apagaItem(this);
+          });
+
+          calculaTotal();
+
+
+          $('#botao_conf_popup').click(function(){
+             limparPersistenciaSeleccao();
+          
+             var contadorItems = sessionStorage.getItem('contadorItems');
+
+             $('#tabela_pedido tbody tr td').each(function(){
+                contadorItems++;
+                sessionStorage.setItem('contadorItems', contadorItems);
+                
+                var nome = $(this).children('.nome_no_pedido').html();
+                var qtd = $(this).children('.qtd_no_pedido').text();
+                var preco = $(this).children('.preco_no_pedido').text();  
+
+                var nomeVar = "nome" + contadorItems;
+                sessionStorage.setItem(nomeVar, nome);
+                nomeVar = "qtd" + contadorItems;
+                sessionStorage.setItem(nomeVar, qtd);
+                nomeVar = "preco" + contadorItems;
+                sessionStorage.setItem(nomeVar, preco);
+                
+             });
+             if($('#tabela_pedido tbody tr td').size() > 0){
+             window.location.replace("barista.html");
+            }
+
+          }); 
+
+          $('#botao_confirmar').click(function(){
+            $('.help').hide();
+            if($('#tabela_pedido tbody tr td').size() > 0){
+              $('#dummy').click();
+            }
+          });
+          
+          $('#botao_limpar_popup').click(function(){
+              $('#tabela_pedido tbody').html("");
+              limparPersistenciaSeleccao();
+              calculaTotal();
+          });
+
+          $('#botao_limpar').click(function(){
+            $('.help').hide();
+          });
+        });
+      </script>
+
+      <script type="text/javascript">
+            $("document").ready(function() {
+                    
+                var total = sessionStorage.getItem('totalPagamento');
+                $('#totalPagamento').text(total + "€");
+            });
+
+      </script>
+      
+
+      <script type="text/javascript">
+            $("document").ready(function() {
+                var contadorItems = sessionStorage.getItem('contadorSel');
+                  if(contadorItems > 0)
+                  for (var i = 0; i  < contadorItems; i++) {
+                    var nomeTempVar = "nomeSel" + (i + 1);
+                    var qtdTempVar = "qtdSel" + (i + 1);
+                    var precoTempVar = "precoSel" + (i + 1);
+                    var componentesTempVar = "componentesSel" + (i + 1);
+                    var componentes = sessionStorage.getItem(componentesTempVar);
+                    var compString = "";
+
+                    if(componentes != null){
+                      compString = "<section class='componentes'>" + componentes + "</section>";
+                    }
+
+                    var html = "<tr><td><section class=\"botao_apagar_item\"> <img class='trash' src='imagens/trashblack.png'/> </section><section class=\"qtd_no_pedido\">" + sessionStorage.getItem(qtdTempVar) + "</section><section class=\"nome_no_pedido\">" + sessionStorage.getItem(nomeTempVar) + "</section><section class=\"preco_no_pedido\">" + sessionStorage.getItem(precoTempVar) + "</section>" + compString + "</td></tr>";
+
+                    $('#tabela_pedido tbody').append(html);
+                        $(".botao_apagar_item" ).on( "click", function() {
+                            apagaItem(this);
+                        });
+                    };
+
+                 calculaTotal(); 
+                 activaPopupIngr();
+             });
+          
+           function persistenciaSeleccao(){
+              
+              if($('#tabela_pedido tbody tr td').size() > 0){
+                    var contadorItems = 0;
+                    $('#tabela_pedido tbody tr td').each(function(){
+                        contadorItems++;
+                        
+
+                        var nome = $(this).children('.nome_no_pedido').html();
+                        var qtd = $(this).children('.qtd_no_pedido').text();
+                        var preco = $(this).children('.preco_no_pedido').text();  
+                        var componentes = $(this).children('.componentes').html();
+                        var nomeVar = "nomeSel" + contadorItems;
+
+                        sessionStorage.setItem(nomeVar, nome);
+                        nomeVar = "qtdSel" + contadorItems;
+                        sessionStorage.setItem(nomeVar, qtd);
+                        nomeVar = "precoSel" + contadorItems;
+                        sessionStorage.setItem(nomeVar, preco);
+
+                        if(componentes != null){
+                          nomeVar = "componentesSel" + contadorItems;
+                          sessionStorage.setItem(nomeVar, componentes);
+                        }
+                    });
+                    sessionStorage.setItem('contadorSel', contadorItems);
+                  
+                  
+              }
+            }
+            
+            function limparPersistenciaSeleccao(){
+                sessionStorage.setItem('contadorSel', 0);  
+            }
+          
+            //VOLTAR
+            function voltar() {
+                persistenciaSeleccao();
+                window.location = "barista.html";
+            }
+            
+            function goToConversas() {
+                persistenciaSeleccao();
+                window.location = "conversas.html";
+            }
+            
+            function goToPagamentos() {
+                persistenciaSeleccao();
+                window.location = "pagamentos.html";
+            }
+      </script>
+        
+        <script src="total_icone.js"></script>
+    </head>
+
+    <body>
+        <div id="header">
+            <div id="logoContainer">
+                <a onClick="voltar()">
+                    <img id="logo" src="imagens/logosimple.png" />
+                </a>
+            </div>
+            <div id="titleContainer">
+                <span id="title">Bebidas</span>
+            </div>
+            <div id="navigation">
+                <div class="navImgContainer">
+                    <a onClick="goToConversas()">
+                        <img class="msg navImg" src="imagens/mensagens.png" />
+                    </a>
+                </div>
+                <div class="navImgContainer">
+                    <a onClick="goToPagamentos()">
+                        <img class="navImg" src="imagens/pagamentos.png" />
+                    </a>
+                    <div id="total_pagamento"></div>
+                </div> 
+                <div class="navImgContainer">
+                    <a onclick="toggleHelp()">
+                        <img class="navImg" src="imagens/ajuda.png" />
+                    </a>
+                </div>  
+            </div>
+        </div>
+        <div id="content">
+            
+            <!-- highlight da categoria de bebidas -->
+                
+            <script type="text/javascript">
+              
+              function tiraActiveDosOutro() {
+                $('#categoria_bebidas ul a').each(function(){
+                  $(this).removeClass("selected");
+                });
+              }
+
+             $(document).ready(function () {
+
+                $('a[href^="#"]').click(function (){
+                  tiraActiveDosOutro();
+                  $(this).addClass("selected");
+                });
+
+                $('#lista_bebidas_scroll').scroll(function() {
+                  var aguasSumosPos = $('#aguasSumos').offset().top - $('#lista_bebidas_scroll').offset().top;
+                  var bebidasBrancasPos = $('#bebidasBrancas').offset().top  - $('#lista_bebidas_scroll').offset().top;
+                  var cervejasPos = $('#cervejas').offset().top  - $('#lista_bebidas_scroll').offset().top;
+                  var chasCafesPos = $('#chasCafes').offset().top  - $('#lista_bebidas_scroll').offset().top;
+                  var cocktailsPos = $('#cocktails').offset().top  - $('#lista_bebidas_scroll').offset().top;
+                  var vinhosPos = $('#vinhos').offset().top  - $('#lista_bebidas_scroll').offset().top;
+
+                  if(aguasSumosPos < 0 && bebidasBrancasPos > 0){
+                    tiraActiveDosOutro();
+                    $('#menuAguasSumos').addClass("selected");
+                  } else if(bebidasBrancasPos < 0 && cervejasPos > 0){   
+                    tiraActiveDosOutro(); 
+                    $('#menuBebidasBrancas').addClass("selected");
+                  } else if(cervejasPos < 0 && chasCafesPos > 0) {
+                    tiraActiveDosOutro(); 
+                    $('#menuCervejas').addClass("selected");
+                  } else if(chasCafesPos < 0 && cocktailsPos > 0){
+                    tiraActiveDosOutro(); 
+                    $('#menuChasCafes').addClass("selected");
+                  } else if(cocktailsPos < 0 && vinhosPos > 0){
+                     tiraActiveDosOutro(); 
+                    $('#menuCocktails').addClass("selected");
+                  } else if(cocktailsPos < 0){
+                    tiraActiveDosOutro(); 
+                    $('#menuVinhos').addClass("selected");
+                  }
+                   
+                });
+
+             });
+
+            </script>
+
+            <div id="categoria_bebidas">
+              <ul>
+                <a id="menuAguasSumos" class="selected" href="#aguasSumos"><li>Águas e Sumos</li> </a>
+                <a id="menuBebidasBrancas" href="#bebidasBrancas"> <li>Bebidas Brancas</li> </a>
+                <a id="menuCervejas" href="#cervejas"> <li>Cervejas</li> </a>
+                <a id="menuChasCafes" href="#chasCafes"> <li>Chás e Cafés</li> </a>
+                <a id="menuCocktails" href="#cocktails"> <li>Cocktails</li> </a>
+                <a id="menuVinhos" href="#vinhos"> <li>Vinhos</li> </a>
+              </ul>
+             
+            </div>
+
+            <div id="lista_bebidas">
+              <div id="lista_bebidas_scroll"> 
+                <table id="tabela_lista_bebidas">
+                  <tbody>
+                    <tr class="categoriaBebida">
+                      <td>
+                        <div id="aguasSumos" class="nome_bebida"><b>Águas e Sumos</b></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Água</div>
+                         <div class="preco">1.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Água com Gás</div>
+                         <div class="preco">1.50€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Coca-Cola</div>
+                         <div class="preco">2.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Red Bull</div>
+                         <div class="preco">3.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Sumo de Laranja</div>
+                         <div class="preco">1.70€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Sumo de Limão</div>
+                         <div class="preco">1.70€</div>
+                      </td>
+                    </tr>
+                    <tr class="categoriaBebida">
+                      <td>
+                        <div id="bebidasBrancas" class="nome_bebida"><b>Bebidas Brancas</b></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Absinto</div>
+                         <div class="preco">3.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Gin tónico</div>
+                         <div class="preco">3.50€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Tequila</div>
+                         <div class="preco">3.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Vodka</div>
+                         <div class="preco">3.50€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Whiskey</div>
+                         <div class="preco">5.00€</div>
+                      </td>
+                    </tr>
+                    <tr class="categoriaBebida">
+                      <td>
+                        <div id="cervejas" class="nome_bebida"><b>Cervejas</b></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Corona</div>
+                         <div class="preco">3.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Desperados</div>
+                         <div class="preco">3.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Heineken</div>
+                         <div class="preco">2.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Sagres</div>
+                         <div class="preco">1.50€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Super Bock</div>
+                         <div class="preco">1.50€</div>
+                      </td>
+                    </tr>
+                    <tr class="categoriaBebida">
+                      <td>
+                        <div id="chasCafes" class="nome_bebida"><b>Chás e Cafés</b></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Café</div>
+                         <div class="preco">0.80€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Café com Natas</div>
+                         <div class="preco">1.40€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Capuccino</div>
+                         <div class="preco">1.70€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Descafeínado</div>
+                         <div class="preco">0.80€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Galão</div>
+                         <div class="preco">1.60€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Chá de Camomila</div>
+                         <div class="preco">1.10€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Chá de Menta</div>
+                         <div class="preco">1.10€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Chá Preto</div>
+                         <div class="preco">1.10€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Chá Verde</div>
+                         <div class="preco">1.10€</div>
+                      </td>
+                    </tr>
+                    <tr class="categoriaBebida">
+                      <td>
+                        <div id="cocktails" class="nome_bebida"><b>Cocktails</b></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Barista</div>
+                         <div class="preco">5.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Bloody Mary</div>
+                         <div class="preco">5.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Caipiroska</div>
+                         <div class="preco">5.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Cuba Libre</div>
+                         <div class="preco">5.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Margarita</div>
+                         <div class="preco">5.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Mojito</div>
+                         <div class="preco">5.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Sex On The Beach</div>
+                         <div class="preco">5.00€</div>
+                      </td>
+                    </tr>
+                    <tr class="categoriaBebida">
+                      <td>
+                        <div id="vinhos" class="nome_bebida" anchor.href = "#"><b>Vinhos</b></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Abadia Velha</div>
+                         <div class="preco">4.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Barca Velha</div>
+                         <div class="preco">4.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Dona Ermelinda</div>
+                         <div class="preco">4.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Douro Reserva</div>
+                         <div class="preco">4.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Esporão Reserva</div>
+                         <div class="preco">10.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Gazela</div>
+                         <div class="preco">4.00€</div>
+                      </td>
+                    </tr>
+                      <td>
+                        <div class="nome_bebida">Marquês de Borba</div>
+                         <div class="preco">11.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Mateus Rosé</div>
+                         <div class="preco">4.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Náutico</div>
+                         <div class="preco">4.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Quinta da Bacalhôa</div>
+                         <div class="preco">5.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Quinta da Murta</div>
+                         <div class="preco">4.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Quinta dos Roques</div>
+                         <div class="preco">9.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Tinto da Ânfora</div>
+                         <div class="preco">9.00€</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="nome_bebida">Vinho da Casa</div>
+                         <div class="preco">4.00€</div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div id="pedido_corrente"> 
+              <div id="pedido_title">Selec&ccedil;&atilde;o Actual</div>
+              <div id="tabela_pedido_container">
+                <table id="tabela_pedido">
+                  <tbody>
+                  
+                  </tbody>
+                </table>
+              </div>
+              <div id="total_container">Total: <span id="valor_total"></span> </div>
+              <div id="pedido_botoes_container">
+                <div id="botao_limpar">
+                  Limpar
+                </div>
+                <div id="botao_confirmar">
+                 Confirmar
+                </div>
+              </div>
+            </div>
+        </div>
+        <div id="flutuantes">
+            <div id="voltar">
+                <a onclick="voltar()">
+                    <img id ="voltarImg" src="imagens/voltar.png">
+                </a>
+            </div>
+
+            <div id="ajudas">
+                <div class="help" id="help1">&larr; 1. Seleccione a categoria</div>
+                <div class="help" id="help2">&uarr; 2. Toque na bebida pretendida para obter opções</div>
+                <div class="help" id="help3">3. Verifique ou altere o seu pedido &rarr;</div>
+                <div class="help" id="help4">4. Confirme o pedido &rarr;</div>
+            </div>
+
+            <div class="ink-shade fade">
+              <div class="ink-modal" data-trigger=".botao_pers" data-width="800px" data-height="600px">
+                <div class="modal-header">
+                  <a onclick="toggleHelpPers()">
+                    <img id="ajuda_pers" src="imagens/ajuda.png">
+                  </a>
+                  <h2>Personalizar <span id="titulo_pers"></span></h2>
+                </div>
+                <div class="modal-body">
+
+                  <div id="ajudasPop">
+                    <div class="help" id="ajudaPop1">&darr; 1. Seleccione a(s) bebida(s) desejada(s)</div>
+                    <div class="help" id="ajudaPop2">&uarr; 2. Regule a quantidade de cada bebida</div>
+                    <div class="help" id="ajudaPop3">&uarr; 3. Indique quantas unidades deseja</div>
+                  </div>
+
+                  <div id="garrafeira">
+                    <div class="garrafeira_item" onclick="javascript:adicionaBebida('Vodka')">
+                      <img class="garrafeiraIMG" src="imagens/vodka.png"/>
+                      <div class="garrafeira_legenda">Vodka</div>
+                    </div>
+
+                    <div class="garrafeira_item" onclick="javascript:adicionaBebida('Gin')">
+                      <img class="garrafeiraIMG" src="imagens/gin.png"/>
+                      <div class="garrafeira_legenda">Gin</div>
+                    </div>
+
+                    <div class="garrafeira_item" onclick="javascript:adicionaBebida('Whiskey')">
+                      <img class="garrafeiraIMG" src="imagens/whiskey.png"/>
+                      <div class="garrafeira_legenda">Whiskey</div>
+                    </div>
+
+                    <div class="garrafeira_item" onclick="javascript:adicionaBebida('Tequila')">
+                      <img class="garrafeiraIMG" src="imagens/tequila.png"/>
+                      <div class="garrafeira_legenda">Tequila</div>
+                    </div>
+
+                    <div class="garrafeira_item" onclick="javascript:adicionaBebida('Absinto')">
+                      <img class="garrafeiraIMG" src="imagens/absinto.png"/>
+                      <div class="garrafeira_legenda">Absinto</div>
+                    </div>
+
+                    <div class="garrafeira_item" onclick="javascript:adicionaBebida('Cerveja')">
+                      <img class="garrafeiraIMG" src="imagens/cerveja.png"/>
+                      <div class="garrafeira_legenda">Cerveja</div>
+                    </div>
+
+                    <div class="garrafeira_item" onclick="javascript:adicionaBebida('Coca-Cola')">
+                      <img class="garrafeiraIMG" src="imagens/cocacola.png"/>
+                      <div class="garrafeira_legenda">Coca-Cola</div>
+                    </div>
+
+                    <div class="garrafeira_item" onclick="javascript:adicionaBebida('Sumo de Limão')">
+                      <img class="garrafeiraIMG" src="imagens/limao.png"/>
+                      <div class="garrafeira_legenda">Sumo de Limão</div>
+                    </div>
+
+                    <div class="garrafeira_item" onclick="javascript:adicionaBebida('Red Bull')">
+                      <img class="garrafeiraIMG" src="imagens/redbull.png"/>
+                      <div class="garrafeira_legenda">Red Bull</div>
+                    </div>
+
+                    <div class="garrafeira_item" onclick="javascript:adicionaBebida('Água')">
+                      <img class="garrafeiraIMG" src="imagens/agua.png"/>
+                      <div class="garrafeira_legenda">Água</div>
+                    </div>
+
+                  </div>
+                  <div id="status">
+                    <div id="status_pers">
+                      <table id="tabela_pers">
+                        <tbody>
+                       </tbody>
+                     </table>
+                    </div>
+                    <div id="total_pers_container">
+                      <section id="total_pers_text"><span class='personalizado'>*</span> <span id="titulo_pers2"></section>
+                      <section id="pers_menos_qtd" onclick="javascript:reduzirQuantidadePedidoPersonalizado()"><img src="imagens/menos.png"/></section>
+                      <section id="pers_qtd">1</section>
+                      <section id="pers_mais_qtd" onclick="javascript:aumentarQuantidadePedidoPersonalizado()"><img src="imagens/mais.png"/></section>
+                      <section id="total_pers">0.00€</section> 
+                    </div>                      
+                  </div>
+                  <div id="copo">
+                    <canvas id="copoCanvas"></canvas>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <div class="ink-dismiss pop_bot_left" onclick="javascript:cancelaToggleHelp()">Cancelar</div>
+                  <div class="ink-dismiss pop_bot_right" id="confirmar_pers" onclick="javascript:cancelaToggleHelp()">Confirmar</div> 
+                </div>
+              </div>
+            </div>
+
+            <div id="popup_confirm" class="ink-shade fade">
+              <div class="ink-modal"  data-trigger="#dummy" data-width="400px" data-height="200px">
+                <div class="modal-body">
+                   <p><p><p><center> Deseja confirmar o pedido? </center>
+                
+                </div>
+                <div class="modal-footer">
+                  <div class="ink-dismiss pop_bot_left">N&atilde;o</div>
+                  <div class="ink-dismiss pop_bot_right" id="botao_conf_popup">Sim</div> 
+                </div>
+              </div>
+            </div>
+
+            <div id="popup_limpar" class="ink-shade fade">
+              <div class="ink-modal"  data-trigger="#botao_limpar" data-width="400px" data-height="200px">
+                <div class="modal-body">
+                   <p><p><p><center> Deseja limpar a lista de pedidos? </center>
+                
+                </div>
+                <div class="modal-footer">
+                  <div class="ink-dismiss pop_bot_left">N&atilde;o</div>
+                  <div class="ink-dismiss pop_bot_right" id="botao_limpar_popup">Sim</div> 
+                </div>
+              </div>
+            </div>
+
+            <div id="dummy"></div>
+
+            <div id="debug"></div>
+
+            <div id="dummy_ingr"></div>
+
+            <!-- Pop up ingredientes -->
+
+            <div  id="popup_ingr" class="ink-shade fade">
+              <div class="ink-modal"  data-trigger="#dummy_ingr" data-width="450px" data-height="350px">
+                <div class="modal-header">
+                  <h2><span id="titulo_ingr"></span><span id="preco_unitario"></span></h2>
+                </div>
+                <div class="modal-body">
+                  <div id="ingr_list_container"></div>
+                  <div id="ingr_qtd_container"> 
+                    <section id="ingr_menos_qtd" onclick="javascript:reduzirQuantidadeIngr()"><img src="imagens/menos.png"/></section>
+                    <section id="ingr_qtd"></section>
+                    <section id="ingr_mais_qtd" onclick="javascript:aumentarQuantidadeIngr()"><img src="imagens/mais.png"/></section>
+                  </div>
+                </div>
+                
+                <div class="modal-footer">
+                  <div class="center">
+                    <div class="ink-dismiss pop_bot_left">Cancelar</div>
+                    <div class="ink-dismiss pop_bot_right" id="confirmar_ingr">Confirmar</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+        </div>
+    <body>
+</html>
